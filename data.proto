@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package DATA2410_Portfolio2;
+
+service Data {
+
+}
