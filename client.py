@@ -41,15 +41,30 @@ def create_fruit():
 
             fruits.append((x,y))
 
-# Obstacles
+# Assets
 fruits = []
-snakes_data = [
+snakes = [
     {"name": "jetto", 
     "score": 0,
-    "position": [(30, 4), (30, 3), (30, 2), (30, 1)]
-
+    "position": [(30, 4), (30, 3), (30, 2), (30, 1)],
+    "color": "random color",
+    "game_over": False
     },
+
+    {"name": "nikko", 
+    "score": 0,
+    "position": [(40, 4), (40, 3), (40, 2), (40, 1)],
+    "color": "random color",
+    "game_over": False
+    }
 ]
+
+def draw_other_snakes():
+    global snakes
+    
+    for snake in snakes:
+        for pos in snake["position"]:
+            screen.set_at(pos, SALMON)
 
 # Draws the fruit coordinats from the server
 def draw_fruit():
@@ -58,6 +73,7 @@ def draw_fruit():
         
 def move_snake():
     global fruits
+    global snakes
     global velX
     global velY
     global posX
@@ -77,9 +93,15 @@ def move_snake():
         velY = 0
         velX = 1
 
+    # Boolean statements for game_over if test below
     hit_self = snake_body[len(snake_body) - 1] in snake_body[:-1]
     hit_border = posX > WIDTH - 1 or posX < 0 or posY > HEIGHT - 1 or posY < 0
+    
     hit_snakes = False
+
+    for snake in snakes:
+        if snake_body[len(snake_body) - 1] in snake["position"]:
+            hit_snakes = True
 
     # Ved å treffe seg selv, eller andre slanger skal spillet være over, men fortsatt være i bildet.
     # Ved å treffe kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne tråkke over kroppen
@@ -90,9 +112,9 @@ def move_snake():
     elif snake_body[len(snake_body) - 1] in fruits:
         print(fruits)
         print(posX - velX, posY - velY)
-
-        fruits.remove((posX - velX, posY - velY))
         print(fruits)
+    
+        fruits.remove((posX - velX, posY - velY))
         snake_body.append((posX, posY))
 
     else:
@@ -109,7 +131,7 @@ def draw_snake():
         screen.set_at(pos, PEACH_ORANGE)
 
 def draw():
-    # Background
+    # Drawing background
     screen.fill(VICTORIA)
 
     for x in range(WIDTH):
@@ -121,11 +143,12 @@ def draw():
             if (x + offset) % 2 == 0:
                 screen.set_at((x, y), TRENDY_PINK)
 
-    # Assets
+    # Drawing assets
     draw_fruit()
     if not game_over:
         move_snake()
     draw_snake()
+    draw_other_snakes()
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
