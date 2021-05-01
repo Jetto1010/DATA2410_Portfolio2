@@ -5,7 +5,7 @@ import threading
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 10
+FPS = 20
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 pygame.display.set_caption("PySnake")
 
@@ -14,13 +14,14 @@ screen = pygame.Surface((WIDTH, HEIGHT))
 # Colors
 PEACH_ORANGE = (255, 201, 150)
 SALMON = (255, 132, 116)
-VICTORIA = (88, 61, 114)
-TRENDY_PINK = (114, 87, 140)
+VICTORIA = (26, 26, 26)
+TRENDY_PINK = (38, 38, 38)
 
 # Snake attributes
 velX, velY = 1, 0
 snake_body = [(1, 4), (1, 3), (1, 2), (1, 1)]
 posX, posY = snake_body[len(snake_body) - 1][0] + velX, snake_body[len(snake_body) - 1][1] + velY
+game_over = False
 
 #Test data of fruit:
 def create_fruit():
@@ -42,14 +43,20 @@ def create_fruit():
 
 # Obstacles
 fruits = []
+snakes_data = [
+    {"name": "jetto", 
+    "score": 0,
+    "position": [(30, 4), (30, 3), (30, 2), (30, 1)]
+
+    },
+]
 
 # Draws the fruit coordinats from the server
 def draw_fruit():
     for pos in fruits:
         screen.set_at(pos, "red")
         
-
-def draw_snake():
+def move_snake():
     global fruits
     global velX
     global velY
@@ -70,23 +77,33 @@ def draw_snake():
         velY = 0
         velX = 1
 
-    # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
-    if snake_body[len(snake_body) - 1] in fruits:
-        print(fruits)
-        print(posX, posY)
-        #fruits.remove((posX, posY))
+    hit_self = snake_body[len(snake_body) - 1] in snake_body[:-1]
+    hit_border = posX > WIDTH - 1 or posX < 0 or posY > HEIGHT - 1 or posY < 0
+    hit_snakes = False
 
+    # Ved å treffe seg selv, eller andre slanger skal spillet være over, men fortsatt være i bildet.
+    # Ved å treffe kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne tråkke over kroppen
+    if hit_self or hit_border or hit_snakes:
+        game_over = True
+
+    # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
+    elif snake_body[len(snake_body) - 1] in fruits:
+        print(fruits)
+        print(posX - velX, posY - velY)
+
+        fruits.remove((posX - velX, posY - velY))
+        print(fruits)
         snake_body.append((posX, posY))
+
     else:
         # Ved bevegelse push ny pos i snake body, pop bakerste
         snake_body.pop(0)
         snake_body.append((posX, posY))
 
-    
-
     posX += velX
     posY += velY
 
+def draw_snake():
     # Draws every "pixel" body of the snake
     for pos in snake_body:
         screen.set_at(pos, PEACH_ORANGE)
@@ -104,7 +121,10 @@ def draw():
             if (x + offset) % 2 == 0:
                 screen.set_at((x, y), TRENDY_PINK)
 
+    # Assets
     draw_fruit()
+    if not game_over:
+        move_snake()
     draw_snake()
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
