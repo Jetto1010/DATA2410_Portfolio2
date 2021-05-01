@@ -1,4 +1,7 @@
 import pygame
+import time
+import random
+import threading
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
@@ -19,9 +22,32 @@ velX, velY = 1, 0
 snake_body = [(1, 4), (1, 3), (1, 2), (1, 1)]
 posX, posY = snake_body[len(snake_body) - 1][0] + velX, snake_body[len(snake_body) - 1][1] + velY
 
+#Test data of fruit:
+def create_fruit():
+    global fruits
+
+    if len(fruits) < 5:
+        while len(fruits) < 5:
+            secs = random.randint(1, 3)
+            time.sleep(secs)
+            x = random.randint(0, WIDTH)
+            y = random.randint(0, HEIGHT)
+
+            while (x,y) in fruits:
+                print(x,y)
+                x = random.randint(0, WIDTH)
+                y = random.randint(0, HEIGHT)
+
+            fruits.append((x,y))
+
 # Obstacles
 fruits = []
 
+# Draws the fruit coordinats from the server
+def draw_fruit():
+    for pos in fruits:
+        screen.set_at(pos, "red")
+        
 
 def draw_snake():
     global fruits
@@ -46,19 +72,24 @@ def draw_snake():
 
     # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
     if snake_body[len(snake_body) - 1] in fruits:
-        return
+        print(fruits)
+        print(posX, posY)
+        #fruits.remove((posX, posY))
+
+        snake_body.append((posX, posY))
     else:
+        # Ved bevegelse push ny pos i snake body, pop bakerste
         snake_body.pop(0)
         snake_body.append((posX, posY))
 
-    # Ved bevegelse push ny pos i snake body, pop bakerste
+    
 
     posX += velX
     posY += velY
 
+    # Draws every "pixel" body of the snake
     for pos in snake_body:
         screen.set_at(pos, PEACH_ORANGE)
-
 
 def draw():
     # Background
@@ -73,6 +104,7 @@ def draw():
             if (x + offset) % 2 == 0:
                 screen.set_at((x, y), TRENDY_PINK)
 
+    draw_fruit()
     draw_snake()
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
@@ -80,10 +112,14 @@ def draw():
 
 
 def main():
+    
+
     clock = pygame.time.Clock()
     run = True
+    threading.Thread(target=create_fruit).start()
     while run:
         clock.tick(FPS)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
