@@ -5,7 +5,7 @@ package DATA2410_Portfolio2;
 service Data {
     rpc sendPlayer(Player) returns (Player);
     rpc sendHighScore(HighScore) returns (HighScore);
-    rpc send(Fruits) returns (Fruits);
+    rpc sendFruits(Fruits) returns (Fruits);
     rpc getPlayers(NoParameter) returns (stream Players);
     rpc getLeaderboard(NoParameter) returns (Leaderboard);
     rpc getFruits(NoParameter) returns (stream Fruits);
