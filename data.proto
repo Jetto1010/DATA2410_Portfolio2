@@ -5,23 +5,24 @@ package DATA2410_Portfolio2;
 service Data {
     rpc sendPlayer(Player) returns (Player);
     rpc sendHighScore(HighScore) returns (HighScore);
+    rpc send(Fruits) returns (Fruits);
     rpc getPlayers(NoParameter) returns (stream Players);
     rpc getLeaderboard(NoParameter) returns (Leaderboard);
+    rpc getFruits(NoParameter) returns (stream Fruits);
 }
-
 
 message NoParameter {}
 
+message Pos {
+  int32 x = 1;
+  int32 y = 2;
+}
+
 message Player {
   string name = 1;
-  int32 score = 2;
-
-  message Pos {
-    int32 x = 1;
-    int32 y = 2;
-  }
-
-  repeated Pos position = 3;
+  repeated int32 color = 2;
+  bool game_over = 3;
+  repeated Pos position = 4;
 }
 
 message Players {
@@ -35,4 +36,8 @@ message HighScore {
 
 message Leaderboard {
   repeated HighScore highScore = 1;
+}
+
+message Fruits {
+  repeated Pos positions = 1;
 }
