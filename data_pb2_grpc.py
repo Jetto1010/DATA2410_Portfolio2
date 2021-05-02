@@ -24,15 +24,15 @@ class DataStub(object):
                 request_serializer=data__pb2.HighScore.SerializeToString,
                 response_deserializer=data__pb2.HighScore.FromString,
                 )
-        self.sendFruits = channel.unary_unary(
-                '/DATA2410_Portfolio2.Data/sendFruits',
-                request_serializer=data__pb2.Fruits.SerializeToString,
-                response_deserializer=data__pb2.Fruits.FromString,
+        self.sendFruit = channel.unary_unary(
+                '/DATA2410_Portfolio2.Data/sendFruit',
+                request_serializer=data__pb2.Fruit.SerializeToString,
+                response_deserializer=data__pb2.Fruit.FromString,
                 )
         self.getPlayers = channel.unary_stream(
                 '/DATA2410_Portfolio2.Data/getPlayers',
                 request_serializer=data__pb2.NoParameter.SerializeToString,
-                response_deserializer=data__pb2.Players.FromString,
+                response_deserializer=data__pb2.Player.FromString,
                 )
         self.getLeaderboard = channel.unary_unary(
                 '/DATA2410_Portfolio2.Data/getLeaderboard',
@@ -42,7 +42,7 @@ class DataStub(object):
         self.getFruits = channel.unary_stream(
                 '/DATA2410_Portfolio2.Data/getFruits',
                 request_serializer=data__pb2.NoParameter.SerializeToString,
-                response_deserializer=data__pb2.Fruits.FromString,
+                response_deserializer=data__pb2.Fruit.FromString,
                 )
 
 
@@ -50,7 +50,8 @@ class DataServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def sendPlayer(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Send to server
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -61,14 +62,15 @@ class DataServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def sendFruits(self, request, context):
+    def sendFruit(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def getPlayers(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Get from server
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -98,15 +100,15 @@ def add_DataServicer_to_server(servicer, server):
                     request_deserializer=data__pb2.HighScore.FromString,
                     response_serializer=data__pb2.HighScore.SerializeToString,
             ),
-            'sendFruits': grpc.unary_unary_rpc_method_handler(
-                    servicer.sendFruits,
-                    request_deserializer=data__pb2.Fruits.FromString,
-                    response_serializer=data__pb2.Fruits.SerializeToString,
+            'sendFruit': grpc.unary_unary_rpc_method_handler(
+                    servicer.sendFruit,
+                    request_deserializer=data__pb2.Fruit.FromString,
+                    response_serializer=data__pb2.Fruit.SerializeToString,
             ),
             'getPlayers': grpc.unary_stream_rpc_method_handler(
                     servicer.getPlayers,
                     request_deserializer=data__pb2.NoParameter.FromString,
-                    response_serializer=data__pb2.Players.SerializeToString,
+                    response_serializer=data__pb2.Player.SerializeToString,
             ),
             'getLeaderboard': grpc.unary_unary_rpc_method_handler(
                     servicer.getLeaderboard,
@@ -116,7 +118,7 @@ def add_DataServicer_to_server(servicer, server):
             'getFruits': grpc.unary_stream_rpc_method_handler(
                     servicer.getFruits,
                     request_deserializer=data__pb2.NoParameter.FromString,
-                    response_serializer=data__pb2.Fruits.SerializeToString,
+                    response_serializer=data__pb2.Fruit.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -163,7 +165,7 @@ class Data(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def sendFruits(request,
+    def sendFruit(request,
             target,
             options=(),
             channel_credentials=None,
@@ -173,9 +175,9 @@ class Data(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Data/sendFruits',
-            data__pb2.Fruits.SerializeToString,
-            data__pb2.Fruits.FromString,
+        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Data/sendFruit',
+            data__pb2.Fruit.SerializeToString,
+            data__pb2.Fruit.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -192,7 +194,7 @@ class Data(object):
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Data/getPlayers',
             data__pb2.NoParameter.SerializeToString,
-            data__pb2.Players.FromString,
+            data__pb2.Player.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -226,6 +228,6 @@ class Data(object):
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Data/getFruits',
             data__pb2.NoParameter.SerializeToString,
-            data__pb2.Fruits.FromString,
+            data__pb2.Fruit.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

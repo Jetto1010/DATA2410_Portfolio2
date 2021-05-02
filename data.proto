@@ -3,12 +3,14 @@ syntax = "proto3";
 package DATA2410_Portfolio2;
 
 service Data {
+    // Send to server
     rpc sendPlayer(Player) returns (Player);
     rpc sendHighScore(HighScore) returns (HighScore);
-    rpc sendFruits(Fruits) returns (Fruits);
-    rpc getPlayers(NoParameter) returns (stream Players);
+    rpc sendFruit(Fruit) returns (Fruit);
+    // Get from server
+    rpc getPlayers(NoParameter) returns (stream Player);
     rpc getLeaderboard(NoParameter) returns (Leaderboard);
-    rpc getFruits(NoParameter) returns (stream Fruits);
+    rpc getFruits(NoParameter) returns (stream Fruit);
 }
 
 message NoParameter {}
@@ -25,10 +27,6 @@ message Player {
   repeated Pos position = 4;
 }
 
-message Players {
-  repeated Player player = 1;
-}
-
 message HighScore {
   string name = 1;
   int32 score = 2;
@@ -38,6 +36,6 @@ message Leaderboard {
   repeated HighScore highScore = 1;
 }
 
-message Fruits {
+message Fruit {
   repeated Pos positions = 1;
 }
