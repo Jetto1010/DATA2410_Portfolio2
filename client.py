@@ -79,20 +79,6 @@ def move_snake():
     global posX
     global posY
 
-    key = pygame.key.get_pressed()
-    if (key[pygame.K_w] or key[pygame.K_UP]) and velY != 1:  # Up
-        velY = -1
-        velX = 0
-    elif (key[pygame.K_a] or key[pygame.K_LEFT]) and velX != 1:  # Left
-        velY = 0
-        velX = -1
-    elif (key[pygame.K_s] or key[pygame.K_DOWN]) and velY != -1:  # Down
-        velY = 1
-        velX = 0
-    elif (key[pygame.K_d] or key[pygame.K_RIGHT]) and velX != -1:  # Right
-        velY = 0
-        velX = 1
-
     # Boolean statements for game_over if test below
     hit_self = snake_body[len(snake_body) - 1] in snake_body[:-1]
     hit_border = posX > WIDTH - 1 or posX < 0 or posY > HEIGHT - 1 or posY < 0
@@ -121,6 +107,21 @@ def move_snake():
         # Ved bevegelse push ny pos i snake body, pop bakerste
         snake_body.pop(0)
         snake_body.append((posX, posY))
+
+    # Movement
+    key = pygame.key.get_pressed()
+    if (key[pygame.K_w] or key[pygame.K_UP]) and velY != 1:  # Up
+        velY = -1
+        velX = 0
+    elif (key[pygame.K_a] or key[pygame.K_LEFT]) and velX != 1:  # Left
+        velY = 0
+        velX = -1
+    elif (key[pygame.K_s] or key[pygame.K_DOWN]) and velY != -1:  # Down
+        velY = 1
+        velX = 0
+    elif (key[pygame.K_d] or key[pygame.K_RIGHT]) and velX != -1:  # Right
+        velY = 0
+        velX = 1    
 
     posX += velX
     posY += velY
