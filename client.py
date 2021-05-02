@@ -74,6 +74,7 @@ def draw_fruit():
 def move_snake():
     global fruits
     global snakes
+    global game_over
     global velX
     global velY
     global posX
@@ -109,22 +110,23 @@ def move_snake():
         snake_body.append((posX, posY))
 
     # Movement
-    key = pygame.key.get_pressed()
-    if (key[pygame.K_w] or key[pygame.K_UP]) and velY != 1:  # Up
-        velY = -1
-        velX = 0
-    elif (key[pygame.K_a] or key[pygame.K_LEFT]) and velX != 1:  # Left
-        velY = 0
-        velX = -1
-    elif (key[pygame.K_s] or key[pygame.K_DOWN]) and velY != -1:  # Down
-        velY = 1
-        velX = 0
-    elif (key[pygame.K_d] or key[pygame.K_RIGHT]) and velX != -1:  # Right
-        velY = 0
-        velX = 1    
+    if not game_over:
+        key = pygame.key.get_pressed()
+        if (key[pygame.K_w] or key[pygame.K_UP]) and velY != 1:  # Up
+            velY = -1
+            velX = 0
+        elif (key[pygame.K_a] or key[pygame.K_LEFT]) and velX != 1:  # Left
+            velY = 0
+            velX = -1
+        elif (key[pygame.K_s] or key[pygame.K_DOWN]) and velY != -1:  # Down
+            velY = 1
+            velX = 0
+        elif (key[pygame.K_d] or key[pygame.K_RIGHT]) and velX != -1:  # Right
+            velY = 0
+            velX = 1    
 
-    posX += velX
-    posY += velY
+        posX += velX
+        posY += velY
 
 def draw_snake():
     # Draws every "pixel" body of the snake
