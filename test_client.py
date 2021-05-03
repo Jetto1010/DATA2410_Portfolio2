@@ -3,13 +3,17 @@ from data_pb2_grpc import *
 import time
 import grpc
 
+channel = grpc.insecure_channel("localhost:9999")
+service = SnakeStub(channel)
+
 
 def run():
-    channel = grpc.insecure_channel("localhost:9999")
-    service = SnakeStub(channel)
     print(service.send_player(send_player()).confirmation)
     print(service.send_high_score(send_high_score()).confirmation)
     print(service.send_fruit(send_fruit()).confirmation)
+    print(get_players())
+    print(get_leaderboard())
+    print(get_fruits())
 
 
 def send_player():
@@ -38,6 +42,29 @@ def send_fruit():
     position.x = 34
     position.y = 54
     return position
+
+
+def get_players():
+    print("Getting players...")
+    request = service.get_players(No_parameter())
+    return_str = ""
+    for r in request:
+        return_str += "{} \n".format(r)
+    return return_str
+
+
+def get_leaderboard():
+    print("Getting fruits...")
+    return service.get_leaderboard(No_parameter())
+
+
+def get_fruits():
+    print("Getting players...")
+    request = service.get_fruits(No_parameter())
+    return_str = ""
+    for r in request:
+        return_str += "{} \n".format(r)
+    return return_str
 
 
 if __name__ == "__main__":

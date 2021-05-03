@@ -41,7 +41,6 @@ class Snake(SnakeServicer):
     def get_players(self, request, context):
         print("This sends players to clients")
         for p in players:
-            time.sleep(1)
             yield p
 
     def get_leaderboard(self, request, context):
@@ -51,19 +50,18 @@ class Snake(SnakeServicer):
     def get_fruits(self, request, context):
         print("This sends fruits to player")
         for f in fruits:
-            time.sleep(1)
             yield f
 
 
 def start():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     add_SnakeServicer_to_server(Snake(), server)
-    server.add_insecure_port("[::]:9999")
+    server.add_insecure_port("localhost:9999")
     server.start()
     try:
         while True:
             print("server on: threads {}".format(threading.activeCount()))
-            time.sleep(2)
+            time.sleep(5)
     except KeyboardInterrupt:
         print("KeyBoardInterrupt")
         server.stop(0)
