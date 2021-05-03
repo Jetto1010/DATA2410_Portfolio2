@@ -8,7 +8,7 @@ class Node:
     def __init__(self, x, y, parent):
         self.x = x
         self.y = y
-        self.n = []
+        self.n = [] # Neighbors
         self.parent = parent
 
         # Length of amount of parents
@@ -115,16 +115,20 @@ def find_path(fruit, c):
         open_set_list.remove(starting_node)
 
         if (current.x, current.y) == fruit:
+            print("TRUE")
             end_node = current
         
         current.set_n(c)
         for neighbor in current.n:
             temp_g = current.length + 1
-
             
-            if temp_g < neighbor.length:
+            print(temp_g, neighbor.length)
+            # NOT GETTING TRIGGERED
+            if temp_g <= neighbor.length:
                 neighbor.length = temp_g
                 if neighbor not in open_set_list and neighbor not in checked_nodes:
+                    print("NEIGHBOR: ")
+                    print(neighbor.x, neighbor.y)
                     open_set.put(neighbor)
                     open_set_list.append(neighbor)
 
@@ -134,7 +138,9 @@ def find_path(fruit, c):
     path.append((end_node.x, end_node.y))
     while end_node.parent:
         end_node = end_node.parent
+        print(end_node)
         path.append((end_node.x, end_node.y))
+
 
     print("FINISHED")
     print(path)
