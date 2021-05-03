@@ -5,6 +5,8 @@ import grpc
 import time
 import threading
 
+width = 100
+height = 100
 players = []
 leaderboard = []
 fruits = []
@@ -46,6 +48,10 @@ class Snake(SnakeServicer):
     def get_leaderboard(self, request, context):
         print("This sends leaderboard to clients")
         return Leaderboard(high_score=leaderboard)
+
+    def get_size(self, request, context):
+        print("This sends size to clients")
+        return Position(x=width, y=height)
 
     def get_fruits(self, request, context):
         print("This sends fruits to player")

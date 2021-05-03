@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\ndata.proto\x12\x13\x44\x41TA2410_Portfolio2\"\x0e\n\x0cNo_parameter\"!\n\tConfirmed\x12\x14\n\x0c\x63onfirmation\x18\x01 \x01(\x08\" \n\x08Position\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"i\n\x06Player\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05\x63olor\x18\x02 \x03(\x05\x12\x11\n\tgame_over\x18\x03 \x01(\x08\x12/\n\x08position\x18\x04 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position\")\n\nHigh_score\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x05\"B\n\x0bLeaderboard\x12\x33\n\nhigh_score\x18\x01 \x03(\x0b\x32\x1f.DATA2410_Portfolio2.High_score\"9\n\x06\x66ruits\x12/\n\x08position\x18\x01 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position2\xf9\x03\n\x05Snake\x12L\n\x0bsend_player\x12\x1b.DATA2410_Portfolio2.Player\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12T\n\x0fsend_high_score\x12\x1f.DATA2410_Portfolio2.High_score\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12M\n\nsend_fruit\x12\x1d.DATA2410_Portfolio2.Position\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12Q\n\x0bget_players\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1b.DATA2410_Portfolio2.Player\"\x00\x30\x01\x12X\n\x0fget_leaderboard\x12!.DATA2410_Portfolio2.No_parameter\x1a .DATA2410_Portfolio2.Leaderboard\"\x00\x12P\n\nget_fruits\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1b.DATA2410_Portfolio2.fruits\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\ndata.proto\x12\x13\x44\x41TA2410_Portfolio2\"\x0e\n\x0cNo_parameter\"!\n\tConfirmed\x12\x14\n\x0c\x63onfirmation\x18\x01 \x01(\x08\" \n\x08Position\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"i\n\x06Player\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05\x63olor\x18\x02 \x03(\x05\x12\x11\n\tgame_over\x18\x03 \x01(\x08\x12/\n\x08position\x18\x04 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position\")\n\nHigh_score\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x05\"B\n\x0bLeaderboard\x12\x33\n\nhigh_score\x18\x01 \x03(\x0b\x32\x1f.DATA2410_Portfolio2.High_score\"9\n\x06\x66ruits\x12/\n\x08position\x18\x01 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position2\xc9\x04\n\x05Snake\x12L\n\x0bsend_player\x12\x1b.DATA2410_Portfolio2.Player\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12T\n\x0fsend_high_score\x12\x1f.DATA2410_Portfolio2.High_score\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12M\n\nsend_fruit\x12\x1d.DATA2410_Portfolio2.Position\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12Q\n\x0bget_players\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1b.DATA2410_Portfolio2.Player\"\x00\x30\x01\x12X\n\x0fget_leaderboard\x12!.DATA2410_Portfolio2.No_parameter\x1a .DATA2410_Portfolio2.Leaderboard\"\x00\x12N\n\x08get_size\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1d.DATA2410_Portfolio2.Position\"\x00\x12P\n\nget_fruits\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1b.DATA2410_Portfolio2.fruits\"\x00\x30\x01\x62\x06proto3'
 )
 
 
@@ -347,7 +347,7 @@ _SNAKE = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=398,
-  serialized_end=903,
+  serialized_end=983,
   methods=[
   _descriptor.MethodDescriptor(
     name='send_player',
@@ -400,9 +400,19 @@ _SNAKE = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='get_size',
+    full_name='DATA2410_Portfolio2.Snake.get_size',
+    index=5,
+    containing_service=None,
+    input_type=_NO_PARAMETER,
+    output_type=_POSITION,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='get_fruits',
     full_name='DATA2410_Portfolio2.Snake.get_fruits',
-    index=5,
+    index=6,
     containing_service=None,
     input_type=_NO_PARAMETER,
     output_type=_FRUITS,

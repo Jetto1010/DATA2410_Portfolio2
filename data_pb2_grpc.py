@@ -42,6 +42,11 @@ class SnakeStub(object):
                 request_serializer=data__pb2.No_parameter.SerializeToString,
                 response_deserializer=data__pb2.Leaderboard.FromString,
                 )
+        self.get_size = channel.unary_unary(
+                '/DATA2410_Portfolio2.Snake/get_size',
+                request_serializer=data__pb2.No_parameter.SerializeToString,
+                response_deserializer=data__pb2.Position.FromString,
+                )
         self.get_fruits = channel.unary_stream(
                 '/DATA2410_Portfolio2.Snake/get_fruits',
                 request_serializer=data__pb2.No_parameter.SerializeToString,
@@ -87,6 +92,12 @@ class SnakeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def get_size(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def get_fruits(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -120,6 +131,11 @@ def add_SnakeServicer_to_server(servicer, server):
                     servicer.get_leaderboard,
                     request_deserializer=data__pb2.No_parameter.FromString,
                     response_serializer=data__pb2.Leaderboard.SerializeToString,
+            ),
+            'get_size': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_size,
+                    request_deserializer=data__pb2.No_parameter.FromString,
+                    response_serializer=data__pb2.Position.SerializeToString,
             ),
             'get_fruits': grpc.unary_stream_rpc_method_handler(
                     servicer.get_fruits,
@@ -221,6 +237,23 @@ class Snake(object):
         return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/get_leaderboard',
             data__pb2.No_parameter.SerializeToString,
             data__pb2.Leaderboard.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_size(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/get_size',
+            data__pb2.No_parameter.SerializeToString,
+            data__pb2.Position.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

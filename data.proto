@@ -13,6 +13,7 @@ service Snake {
     // Get from server
     rpc get_players(No_parameter) returns (stream Player) {}
     rpc get_leaderboard(No_parameter) returns (Leaderboard) {}
+    rpc get_size(No_parameter) returns (Position) {}
     rpc get_fruits(No_parameter) returns (stream fruits) {}
 }
 

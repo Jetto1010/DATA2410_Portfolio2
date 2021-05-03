@@ -13,6 +13,7 @@ def run():
     print(service.send_fruit(send_fruit()).confirmation)
     print(get_players())
     print(get_leaderboard())
+    print(get_size())
     print(get_fruits())
 
 
@@ -56,6 +57,11 @@ def get_players():
 def get_leaderboard():
     print("Getting fruits...")
     return service.get_leaderboard(No_parameter())
+
+
+def get_size():
+    print("Getting size...")
+    return format(service.get_size(No_parameter()))
 
 
 def get_fruits():
