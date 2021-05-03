@@ -34,12 +34,8 @@ class Node:
 
         def is_safe(x, y):
             # Boolean statements for game_over if test below
-            hit_self = (x, y) in snake_body[:-1]
+            hit_self = (x, y) in snake_body
             hit_border = x > WIDTH - 1 or x < 0 or y > HEIGHT - 1 or y < 0
-            backwards = snake_body[-1] == (snake_body[-2][0] - vel[0], snake_body[-2][1] - vel[1])
-
-            if backwards:
-                print("BAK SEG SELV")
         
             hit_snakes = False
 
@@ -47,7 +43,7 @@ class Node:
                 if (x, y) in snake["position"]:
                     hit_snakes = True
 
-            if hit_self or hit_border or hit_snakes or backwards:
+            if hit_self or hit_border or hit_snakes:
                 return False
             else:
                 return True
@@ -150,6 +146,7 @@ def find_path(fruit, c):
         end_node = end_node.parent
         path.append((end_node.x, end_node.y))
 
+    path.reverse()
     return path
     
 
