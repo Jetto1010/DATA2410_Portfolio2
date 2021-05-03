@@ -18,16 +18,18 @@ pygame.display.set_caption("PySnake")
 
 screen = pygame.Surface((WIDTH, HEIGHT))
 
+
 # Colors
 
 # Prevents generating a color that blends in with the background
 def rand_light_color():
-    r,g,b = random.randint(0,255), random.randint(0,255), random.randint(0,255)
-    
+    r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+
     while r < 100 and g < 100 and b < 100:
-        r,g,b = random.randint(0,255), random.randint(0,255), random.randint(0,255)
-    
-    return (r,g,b)
+        r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+
+    return r, g, b
+
 
 SNAKE_COLOR = rand_light_color()
 TESTCOLOR_OTHERSNAKES = (255, 132, 116)
@@ -50,6 +52,7 @@ snake = {
     "game_over": game_over
 }
 
+
 # Test data of fruit. This function is supposed to run on the server
 def create_fruit():
     global fruits
@@ -64,14 +67,15 @@ def create_fruit():
             y = random.randint(0, HEIGHT)
 
             # Ensures that fruit never spawn twice on the same tile
-            while (x,y) in fruits:
+            while (x, y) in fruits:
                 x = random.randint(0, WIDTH)
                 y = random.randint(0, HEIGHT)
 
-            fruits.append((x,y))
+            fruits.append((x, y))
+
 
 # Assets
-fruits = [( ceil(WIDTH/2), ceil(HEIGHT/2))]
+fruits = [(ceil(WIDTH / 2), ceil(HEIGHT / 2))]
 snakes = [
     {
         "name": "jetto",
@@ -100,17 +104,20 @@ highscores = [
     }
 ]
 
+
 def draw_other_snakes():
     global snakes
-    
+
     for snake in snakes:
         for pos in snake["position"]:
             screen.set_at(pos, TESTCOLOR_OTHERSNAKES)
+
 
 # Draws the fruit coordinats from the server
 def draw_fruit():
     for pos in fruits:
         screen.set_at(pos, "red")
+
 
 # Checks if player triggers a hit event
 def hit_event():
@@ -125,15 +132,16 @@ def hit_event():
     # Boolean statements for game_over if test below
     hit_self = snake_body[len(snake_body) - 1] in snake_body[:-1]
     hit_border = posX > WIDTH - 1 or posX < 0 or posY > HEIGHT - 1 or posY < 0
-    
+
     hit_snakes = False
 
     for snake in snakes:
         if snake_body[len(snake_body) - 1] in snake["position"]:
             hit_snakes = True
 
-    # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet.
-    # Ved å treffe kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne tråkke over kroppen
+    # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
+    # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
+    # tråkke over kroppen
     if hit_self or hit_border or hit_snakes:
         game_over = True
 
@@ -146,6 +154,7 @@ def hit_event():
         # Ved bevegelse push ny pos i snake body, pop bakerste
         snake_body.pop(0)
         snake_body.append((posX, posY))
+
 
 def move_snake():
     global velX
@@ -168,15 +177,17 @@ def move_snake():
         velX = 0
     elif (key[pygame.K_d] or key[pygame.K_RIGHT]) and velX != -1:  # Right
         velY = 0
-        velX = 1    
+        velX = 1
 
     posX += velX
     posY += velY
+
 
 def draw_snake():
     # Draws every "pixel" body of the snake
     for pos in snake_body:
         screen.set_at(pos, SNAKE_COLOR)
+
 
 # Draws the background and assets onto the window
 def draw():
@@ -198,14 +209,15 @@ def draw():
     draw_fruit()
     if not game_over:
         move_snake()
-        
+
     draw_snake()
     draw_other_snakes()
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
 
-# Displays a menu with highscores and a start game button 
+
+# Displays a menu with highscores and a start game button
 def show_menu():
     global highscores
 
@@ -226,11 +238,11 @@ def show_menu():
     title_label.pack()
 
     # Name field:
-    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d",)
+    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d", )
     name_label.pack()
     name_input = Entry(font=font)
     name_input.pack()
-    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d",)
+    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d", )
     margin_label.pack()
 
     # Start game button:
@@ -239,7 +251,7 @@ def show_menu():
         name = name_input.get()
         window.destroy()
 
-    startGame_button = Button(text="Start game", command=start ,font=font , pady=5)
+    startGame_button = Button(text="Start game", command=start, font=font, pady=5)
     startGame_button.pack()
 
     # Highscores: 
@@ -252,10 +264,11 @@ def show_menu():
 
     # Made by text:
     made_text = "Made by:\n Nikola Dordevic, s341839\n Jørund Topp Løvlien, s341822"
-    made_label = tk.Label(text=made_text, padx=60, pady=10, fg="white", bg="#2d2d2d",)
+    made_label = tk.Label(text=made_text, padx=60, pady=10, fg="white", bg="#2d2d2d", )
     made_label.pack()
 
     window.mainloop()
+
 
 # Displays session score, and highscores when the match is over
 def show_score():
@@ -277,7 +290,7 @@ def show_score():
     # Session score:
     session_text = "Session scores: \n"
     for snake in snakes:
-       session_text += "{}: {}\n".format(snake["name"], len(snake["position"]) - 4)
+        session_text += "{}: {}\n".format(snake["name"], len(snake["position"]) - 4)
     session_label = tk.Label(text=session_text, font=font, padx=30, pady=10, fg="white", bg="#2d2d2d")
     session_label.pack()
 
@@ -288,8 +301,9 @@ def show_score():
 
     score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
-    
+
     window.mainloop()
+
 
 def main():
     global run
@@ -303,11 +317,12 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
+
         draw()
-        
+
     pygame.quit()
     show_score()
+
 
 def bot_main():
     global run
@@ -317,7 +332,7 @@ def bot_main():
     clock = pygame.time.Clock()
     threading.Thread(target=create_fruit).start()
 
-    #Previous fruit
+    # Previous fruit
     fruit = (WIDTH, HEIGHT)
     tmp_fruits = []
     print(tmp_fruits)
@@ -340,12 +355,12 @@ def bot_main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
-        draw()
 
+        draw()
 
     pygame.quit()
     show_score()
+
 
 bot = True
 

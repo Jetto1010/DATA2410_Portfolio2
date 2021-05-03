@@ -5,8 +5,11 @@ import grpc
 import data_pb2 as data__pb2
 
 
-class DataStub(object):
-    """Missing associated documentation comment in .proto file."""
+class SnakeStub(object):
+    """Generate files
+    python -m grpc_tools.protoc -I./. --python_out=. --grpc_python_out=. ./data.proto
+
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -14,124 +17,130 @@ class DataStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.sendPlayer = channel.unary_unary(
-                '/DATA2410_Portfolio2.Data/sendPlayer',
+        self.send_player = channel.unary_unary(
+                '/DATA2410_Portfolio2.Snake/send_player',
                 request_serializer=data__pb2.Player.SerializeToString,
+                response_deserializer=data__pb2.Confirmed.FromString,
+                )
+        self.send_high_score = channel.unary_unary(
+                '/DATA2410_Portfolio2.Snake/send_high_score',
+                request_serializer=data__pb2.High_score.SerializeToString,
+                response_deserializer=data__pb2.Confirmed.FromString,
+                )
+        self.send_fruit = channel.unary_unary(
+                '/DATA2410_Portfolio2.Snake/send_fruit',
+                request_serializer=data__pb2.Position.SerializeToString,
+                response_deserializer=data__pb2.Confirmed.FromString,
+                )
+        self.get_players = channel.unary_stream(
+                '/DATA2410_Portfolio2.Snake/get_players',
+                request_serializer=data__pb2.No_parameter.SerializeToString,
                 response_deserializer=data__pb2.Player.FromString,
                 )
-        self.sendHighScore = channel.unary_unary(
-                '/DATA2410_Portfolio2.Data/sendHighScore',
-                request_serializer=data__pb2.HighScore.SerializeToString,
-                response_deserializer=data__pb2.HighScore.FromString,
-                )
-        self.sendFruit = channel.unary_unary(
-                '/DATA2410_Portfolio2.Data/sendFruit',
-                request_serializer=data__pb2.Fruit.SerializeToString,
-                response_deserializer=data__pb2.Fruit.FromString,
-                )
-        self.getPlayers = channel.unary_stream(
-                '/DATA2410_Portfolio2.Data/getPlayers',
-                request_serializer=data__pb2.NoParameter.SerializeToString,
-                response_deserializer=data__pb2.Player.FromString,
-                )
-        self.getLeaderboard = channel.unary_unary(
-                '/DATA2410_Portfolio2.Data/getLeaderboard',
-                request_serializer=data__pb2.NoParameter.SerializeToString,
+        self.get_leaderboard = channel.unary_unary(
+                '/DATA2410_Portfolio2.Snake/get_leaderboard',
+                request_serializer=data__pb2.No_parameter.SerializeToString,
                 response_deserializer=data__pb2.Leaderboard.FromString,
                 )
-        self.getFruits = channel.unary_stream(
-                '/DATA2410_Portfolio2.Data/getFruits',
-                request_serializer=data__pb2.NoParameter.SerializeToString,
-                response_deserializer=data__pb2.Fruit.FromString,
+        self.get_fruits = channel.unary_stream(
+                '/DATA2410_Portfolio2.Snake/get_fruits',
+                request_serializer=data__pb2.No_parameter.SerializeToString,
+                response_deserializer=data__pb2.fruits.FromString,
                 )
 
 
-class DataServicer(object):
-    """Missing associated documentation comment in .proto file."""
+class SnakeServicer(object):
+    """Generate files
+    python -m grpc_tools.protoc -I./. --python_out=. --grpc_python_out=. ./data.proto
 
-    def sendPlayer(self, request, context):
+    """
+
+    def send_player(self, request, context):
         """Send to server
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def sendHighScore(self, request, context):
+    def send_high_score(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def sendFruit(self, request, context):
+    def send_fruit(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def getPlayers(self, request, context):
+    def get_players(self, request, context):
         """Get from server
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def getLeaderboard(self, request, context):
+    def get_leaderboard(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def getFruits(self, request, context):
+    def get_fruits(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_DataServicer_to_server(servicer, server):
+def add_SnakeServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'sendPlayer': grpc.unary_unary_rpc_method_handler(
-                    servicer.sendPlayer,
+            'send_player': grpc.unary_unary_rpc_method_handler(
+                    servicer.send_player,
                     request_deserializer=data__pb2.Player.FromString,
+                    response_serializer=data__pb2.Confirmed.SerializeToString,
+            ),
+            'send_high_score': grpc.unary_unary_rpc_method_handler(
+                    servicer.send_high_score,
+                    request_deserializer=data__pb2.High_score.FromString,
+                    response_serializer=data__pb2.Confirmed.SerializeToString,
+            ),
+            'send_fruit': grpc.unary_unary_rpc_method_handler(
+                    servicer.send_fruit,
+                    request_deserializer=data__pb2.Position.FromString,
+                    response_serializer=data__pb2.Confirmed.SerializeToString,
+            ),
+            'get_players': grpc.unary_stream_rpc_method_handler(
+                    servicer.get_players,
+                    request_deserializer=data__pb2.No_parameter.FromString,
                     response_serializer=data__pb2.Player.SerializeToString,
             ),
-            'sendHighScore': grpc.unary_unary_rpc_method_handler(
-                    servicer.sendHighScore,
-                    request_deserializer=data__pb2.HighScore.FromString,
-                    response_serializer=data__pb2.HighScore.SerializeToString,
-            ),
-            'sendFruit': grpc.unary_unary_rpc_method_handler(
-                    servicer.sendFruit,
-                    request_deserializer=data__pb2.Fruit.FromString,
-                    response_serializer=data__pb2.Fruit.SerializeToString,
-            ),
-            'getPlayers': grpc.unary_stream_rpc_method_handler(
-                    servicer.getPlayers,
-                    request_deserializer=data__pb2.NoParameter.FromString,
-                    response_serializer=data__pb2.Player.SerializeToString,
-            ),
-            'getLeaderboard': grpc.unary_unary_rpc_method_handler(
-                    servicer.getLeaderboard,
-                    request_deserializer=data__pb2.NoParameter.FromString,
+            'get_leaderboard': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_leaderboard,
+                    request_deserializer=data__pb2.No_parameter.FromString,
                     response_serializer=data__pb2.Leaderboard.SerializeToString,
             ),
-            'getFruits': grpc.unary_stream_rpc_method_handler(
-                    servicer.getFruits,
-                    request_deserializer=data__pb2.NoParameter.FromString,
-                    response_serializer=data__pb2.Fruit.SerializeToString,
+            'get_fruits': grpc.unary_stream_rpc_method_handler(
+                    servicer.get_fruits,
+                    request_deserializer=data__pb2.No_parameter.FromString,
+                    response_serializer=data__pb2.fruits.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'DATA2410_Portfolio2.Data', rpc_method_handlers)
+            'DATA2410_Portfolio2.Snake', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class Data(object):
-    """Missing associated documentation comment in .proto file."""
+class Snake(object):
+    """Generate files
+    python -m grpc_tools.protoc -I./. --python_out=. --grpc_python_out=. ./data.proto
+
+    """
 
     @staticmethod
-    def sendPlayer(request,
+    def send_player(request,
             target,
             options=(),
             channel_credentials=None,
@@ -141,14 +150,65 @@ class Data(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Data/sendPlayer',
+        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/send_player',
             data__pb2.Player.SerializeToString,
+            data__pb2.Confirmed.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def send_high_score(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/send_high_score',
+            data__pb2.High_score.SerializeToString,
+            data__pb2.Confirmed.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def send_fruit(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/send_fruit',
+            data__pb2.Position.SerializeToString,
+            data__pb2.Confirmed.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_players(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Snake/get_players',
+            data__pb2.No_parameter.SerializeToString,
             data__pb2.Player.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def sendHighScore(request,
+    def get_leaderboard(request,
             target,
             options=(),
             channel_credentials=None,
@@ -158,65 +218,14 @@ class Data(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Data/sendHighScore',
-            data__pb2.HighScore.SerializeToString,
-            data__pb2.HighScore.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def sendFruit(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Data/sendFruit',
-            data__pb2.Fruit.SerializeToString,
-            data__pb2.Fruit.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def getPlayers(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Data/getPlayers',
-            data__pb2.NoParameter.SerializeToString,
-            data__pb2.Player.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def getLeaderboard(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Data/getLeaderboard',
-            data__pb2.NoParameter.SerializeToString,
+        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/get_leaderboard',
+            data__pb2.No_parameter.SerializeToString,
             data__pb2.Leaderboard.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def getFruits(request,
+    def get_fruits(request,
             target,
             options=(),
             channel_credentials=None,
@@ -226,8 +235,8 @@ class Data(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Data/getFruits',
-            data__pb2.NoParameter.SerializeToString,
-            data__pb2.Fruit.FromString,
+        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Snake/get_fruits',
+            data__pb2.No_parameter.SerializeToString,
+            data__pb2.fruits.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

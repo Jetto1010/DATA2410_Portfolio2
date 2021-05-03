@@ -2,20 +2,27 @@ syntax = "proto3";
 
 package DATA2410_Portfolio2;
 
-service Data {
+// Generate files
+// python -m grpc_tools.protoc -I./. --python_out=. --grpc_python_out=. ./data.proto
+
+service Snake {
     // Send to server
-    rpc sendPlayer(Player) returns (Player);
-    rpc sendHighScore(HighScore) returns (HighScore);
-    rpc sendFruit(Fruit) returns (Fruit);
+    rpc send_player(Player) returns (Confirmed) {}
+    rpc send_high_score(High_score) returns (Confirmed) {}
+    rpc send_fruit(Position) returns (Confirmed) {}
     // Get from server
-    rpc getPlayers(NoParameter) returns (stream Player);
-    rpc getLeaderboard(NoParameter) returns (Leaderboard);
-    rpc getFruits(NoParameter) returns (stream Fruit);
+    rpc get_players(No_parameter) returns (stream Player) {}
+    rpc get_leaderboard(No_parameter) returns (Leaderboard) {}
+    rpc get_fruits(No_parameter) returns (stream fruits) {}
 }
 
-message NoParameter {}
+message No_parameter {}
 
-message Pos {
+message Confirmed {
+  bool confirmation = 1;
+}
+
+message Position {
   int32 x = 1;
   int32 y = 2;
 }
@@ -24,18 +31,18 @@ message Player {
   string name = 1;
   repeated int32 color = 2;
   bool game_over = 3;
-  repeated Pos position = 4;
+  repeated Position position = 4;
 }
 
-message HighScore {
+message High_score {
   string name = 1;
   int32 score = 2;
 }
 
 message Leaderboard {
-  repeated HighScore highScore = 1;
+  repeated High_score high_score = 1;
 }
 
-message Fruit {
-  repeated Pos positions = 1;
+message fruits {
+  repeated Position position = 1;
 }
