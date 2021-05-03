@@ -33,7 +33,7 @@ def send_high_score():
     print("Sending high score...")
     high_score = High_score()
     high_score.name = "Test_high"
-    high_score.score = 34
+    high_score.score = 6
     return high_score
 
 
