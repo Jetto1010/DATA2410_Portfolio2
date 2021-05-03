@@ -61,7 +61,7 @@ def create_fruit():
         # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning more than 6 fruits
         probability = cos(len(fruits) / 3.5)
         if probability > random.random():
-            time.sleep(random.randint(1, 10))
+            time.sleep(random.randint(1, 3))
 
             x = random.randint(0, WIDTH)
             y = random.randint(0, HEIGHT)
@@ -207,9 +207,9 @@ def draw(path):
 
     # Drawing assets
     draw_fruit()
-    #if not game_over and bot:
-        #move_bot_snake(path)
-    if not game_over:
+    if not game_over and bot:
+        move_bot_snake(path)
+    elif not game_over:
         move_snake()
 
     draw_snake()
@@ -308,7 +308,6 @@ def show_score():
 
     window.mainloop()
 
-
 def main():
     global run
 
@@ -329,10 +328,14 @@ def main():
 
 def move_bot_snake(path):
     global velX, velY, posX, posY
-    print(path)
 
-    velX = path[1][0] - posX
-    velY = path[1][1] - posY
+    hit_event()
+
+    try:
+        velX = path[1][0] - posX
+        velY = path[1][1] - posY
+    except:
+        velX, velY = 0, 1
 
     posX += velX
     posY += velY
@@ -355,6 +358,7 @@ def bot_main():
     print(tmp_fruits)
 
     while run:
+        clock.tick(FPS)
         client_info = {
             "run": run,
             "snake_body": snake_body,
@@ -378,7 +382,6 @@ def bot_main():
 
     pygame.quit()
     show_score()
-
 
 bot = True
 
