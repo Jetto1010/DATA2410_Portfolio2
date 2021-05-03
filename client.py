@@ -11,7 +11,7 @@ from bot import *
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 3
+FPS = 7
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 pygame.display.set_caption("PySnake")
@@ -19,7 +19,17 @@ pygame.display.set_caption("PySnake")
 screen = pygame.Surface((WIDTH, HEIGHT))
 
 # Colors
-SNAKE_COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+
+# Prevents generating a color that blends in with the background
+def rand_light_color():
+    r,g,b = random.randint(0,255), random.randint(0,255), random.randint(0,255)
+    
+    while r < 100 and g < 100 and b < 100:
+        r,g,b = random.randint(0,255), random.randint(0,255), random.randint(0,255)
+    
+    return (r,g,b)
+
+SNAKE_COLOR = rand_light_color()
 TESTCOLOR_OTHERSNAKES = (255, 132, 116)
 BLACK = (26, 26, 26)
 GRAY = (38, 38, 38)
@@ -30,7 +40,7 @@ velX, velY = 1, 0
 randX = random.randint(2, WIDTH - 10)
 randY = random.randint(2, HEIGHT - 4)
 snake_body = [(randX, randY + 3), (randX, randY + 2), (randX, randY + 1), (randX, randY)]
-posX, posY = snake_body[len(snake_body) - 1][0] + velX, snake_body[len(snake_body) - 1][1] + velY
+posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
 game_over = False
 
 snake = {
@@ -48,7 +58,7 @@ def create_fruit():
         # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning more than 6 fruits
         probability = cos(len(fruits) / 3.5)
         if probability > random.random():
-            time.sleep(random.randint(1, 3))
+            time.sleep(random.randint(1, 10))
 
             x = random.randint(0, WIDTH)
             y = random.randint(0, HEIGHT)
@@ -61,7 +71,7 @@ def create_fruit():
             fruits.append((x,y))
 
 # Assets
-fruits = []
+fruits = [( ceil(WIDTH/2), ceil(HEIGHT/2))]
 snakes = [
     {
         "name": "jetto",
@@ -122,7 +132,7 @@ def hit_event():
         if snake_body[len(snake_body) - 1] in snake["position"]:
             hit_snakes = True
 
-    # Ved å treffe seg selv, eller andre slanger skal spillet være over, men fortsatt være i bildet.
+    # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet.
     # Ved å treffe kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne tråkke over kroppen
     if hit_self or hit_border or hit_snakes:
         game_over = True
@@ -301,6 +311,7 @@ def main():
 
 def bot_main():
     global run
+    global fruits
 
     show_menu()
     clock = pygame.time.Clock()
@@ -308,24 +319,27 @@ def bot_main():
 
     #Previous fruit
     fruit = (WIDTH, HEIGHT)
+    tmp_fruits = []
+    print(tmp_fruits)
 
     while run:
         client_info = {
             "run": run,
-            "pos": (posX, posY),
+            "snake_body": snake_body,
             "fruits": fruits,
+            "snakes": snakes,
             "dimensions": (WIDTH, HEIGHT)
         }
+
+        if tmp_fruits != fruits:
+            tmp_fruits = fruits
+            fruit = closest_fruit(fruit, client_info)
+            path = threading.Thread(target=find_path, args=(fruit, client_info)).start()
 
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
-        old_fruit = fruit
-        fruit = closest_fruit(fruit, client_info)
-        if not fruit == old_fruit:
-            print(fruit)
         
         draw()
 
