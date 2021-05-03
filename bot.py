@@ -38,7 +38,6 @@ class Node:
             hit_border = x > WIDTH - 1 or x < 0 or y > HEIGHT - 1 or y < 0
         
             hit_snakes = False
-
             for snake in snakes:
                 if (x, y) in snake["position"]:
                     hit_snakes = True
@@ -149,19 +148,6 @@ def find_path(fruit, c):
     path.reverse()
     return path
     
-
-def move_bot_snake():
-
-    def idle():
-        return
-
-    if len(path) == 1:
-        idle()
-    else:
-        
-        return
-
-    return
 # Final bot_main() will look like
 """
 draw()
