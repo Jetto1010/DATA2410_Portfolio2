@@ -11,7 +11,7 @@ from bot import *
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 7
+FPS = 10
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 pygame.display.set_caption("PySnake")
@@ -190,7 +190,7 @@ def draw_snake():
 
 
 # Draws the background and assets onto the window
-def draw():
+def draw(path):
     global game_over
 
     # Drawing background
@@ -207,11 +207,15 @@ def draw():
 
     # Drawing assets
     draw_fruit()
+    #if not game_over and bot:
+        #move_bot_snake(path)
     if not game_over:
         move_snake()
 
     draw_snake()
     draw_other_snakes()
+    draw_path(path)
+    
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
@@ -323,6 +327,19 @@ def main():
     pygame.quit()
     show_score()
 
+def move_bot_snake(path):
+    global velX, velY, posX, posY
+    print(path)
+
+    velX = path[1][0] - posX
+    velY = path[1][1] - posY
+
+    posX += velX
+    posY += velY
+
+def draw_path(path):
+    for p in path:
+        screen.set_at( p, (255,215,0) )
 
 def bot_main():
     global run
@@ -341,22 +358,23 @@ def bot_main():
         client_info = {
             "run": run,
             "snake_body": snake_body,
+            "velocity": (velX, velY),
             "fruits": fruits,
             "snakes": snakes,
             "dimensions": (WIDTH, HEIGHT)
         }
 
-        if tmp_fruits != fruits:
-            tmp_fruits = fruits
-            fruit = closest_fruit(fruit, client_info)
-            path = threading.Thread(target=find_path, args=(fruit, client_info)).start()
+        fruit = closest_fruit(fruit, client_info)
+        path = find_path(fruit, client_info)
 
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-        draw()
+        
+        draw(path)
+        
 
     pygame.quit()
     show_score()

@@ -19,18 +19,27 @@ class Node:
 
         # Distance from fruit
         self.distance = None
-        
+    
+    # Lesser than comparator
+    def __lt__(self, other):
+        return False
+
 
     # If the node is not the border or part of a snake, it adds it as a neighbor (Excluding things we want to avoid)
     def set_n(self, c):
         snakes = c["snakes"]
         snake_body = c["snake_body"]
+        vel = c["velocity"]
         WIDTH, HEIGHT = c["dimensions"]
 
         def is_safe(x, y):
             # Boolean statements for game_over if test below
             hit_self = (x, y) in snake_body[:-1]
             hit_border = x > WIDTH - 1 or x < 0 or y > HEIGHT - 1 or y < 0
+            backwards = snake_body[-1] == (snake_body[-2][0] - vel[0], snake_body[-2][1] - vel[1])
+
+            if backwards:
+                print("BAK SEG SELV")
         
             hit_snakes = False
 
@@ -38,11 +47,11 @@ class Node:
                 if (x, y) in snake["position"]:
                     hit_snakes = True
 
-            if hit_self or hit_border or hit_snakes:
+            if hit_self or hit_border or hit_snakes or backwards:
                 return False
             else:
                 return True
-        
+
         # UP
         xup, yup = (self.x + 0), (self.y + 1)
         if is_safe(xup, yup):
@@ -96,56 +105,66 @@ def closest_fruit(fruit, c):
 
 # Look at neighbors of node, then pick the one with the shortest F(n)
 def find_path(fruit, c):
-    print("STARTING")
     pos = c["snake_body"][-1]
+    vel = c["velocity"]
     length = 0
     path = []
     checked_nodes = []
     
 
     # Put in snake head node to start process
-    open_set = PriorityQueue()
-    starting_node = Node(pos[0], pos[1], None)
+    potential_path = PriorityQueue()
+    starting_node = Node(pos[0] + vel[0], pos[1] + vel[1], None)
     end_node = starting_node
-    open_set.put(starting_node)
-    open_set_list = [starting_node]
+    potential_path.put(starting_node)
+    potential_path_list = [starting_node]
 
-    while not open_set.empty():
-        current = open_set.get()
-        open_set_list.remove(starting_node)
+    while not potential_path.empty():
+        current_node = potential_path.get()
+        potential_path_list.remove(current_node)
 
-        if (current.x, current.y) == fruit:
-            print("TRUE")
-            end_node = current
+        # If the snake head has reached the fruit position, the stop
+        if (current_node.x, current_node.y) == fruit:
+            end_node = current_node
+            break
         
-        current.set_n(c)
-        for neighbor in current.n:
-            temp_g = current.length + 1
-            
-            print(temp_g, neighbor.length)
-            # NOT GETTING TRIGGERED
-            if temp_g <= neighbor.length:
-                neighbor.length = temp_g
-                if neighbor not in open_set_list and neighbor not in checked_nodes:
-                    print("NEIGHBOR: ")
-                    print(neighbor.x, neighbor.y)
-                    open_set.put(neighbor)
-                    open_set_list.append(neighbor)
+        # Checks the neighbouring nodes to the current one, and compares their distance with each other.
+        # The node with the shortest distance gets picked and put into potential path list
+        current_node.set_n(c)
+        for neighbor_node in current_node.n:
+            temp_f = current_node.length + 1 + distance(fruit, (current_node.x, current_node.y))
+            neighbor_f = neighbor_node.length + distance(fruit, (neighbor_node.x, neighbor_node.y))
 
-        if current != starting_node:
-            checked_nodes.append(current)
+            if temp_f > neighbor_f:
+                if neighbor_node not in potential_path_list and neighbor_node not in checked_nodes:
+                    potential_path.put(neighbor_node)
+                    potential_path_list.append(neighbor_node)
 
+        # The algorithm has checked this node, and it is not the fastest way
+        if current_node != starting_node:
+            checked_nodes.append(current_node)
+
+    # Appends the the path, by going through each nodes parent, which is the path traversed
     path.append((end_node.x, end_node.y))
     while end_node.parent:
         end_node = end_node.parent
-        print(end_node)
         path.append((end_node.x, end_node.y))
 
-
-    print("FINISHED")
-    print(path)
     return path
+    
 
+def move_bot_snake():
+
+    def idle():
+        return
+
+    if len(path) == 1:
+        idle()
+    else:
+        
+        return
+
+    return
 # Final bot_main() will look like
 """
 draw()
