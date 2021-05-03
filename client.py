@@ -7,10 +7,11 @@ import tkinter as tk
 from tkinter.font import Font
 from tkinter import *
 import sys
+from bot import *
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 20
+FPS = 3
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 pygame.display.set_caption("PySnake")
@@ -39,8 +40,6 @@ snake = {
     "game_over": game_over
 }
 
-print(snake)
-
 # Test data of fruit. This function is supposed to run on the server
 def create_fruit():
     global fruits
@@ -54,6 +53,7 @@ def create_fruit():
             x = random.randint(0, WIDTH)
             y = random.randint(0, HEIGHT)
 
+            # Ensures that fruit never spawn twice on the same tile
             while (x,y) in fruits:
                 x = random.randint(0, WIDTH)
                 y = random.randint(0, HEIGHT)
@@ -101,8 +101,9 @@ def draw_other_snakes():
 def draw_fruit():
     for pos in fruits:
         screen.set_at(pos, "red")
-        
-def move_snake():
+
+# Checks if player triggers a hit event
+def hit_event():
     global fruits
     global snakes
     global game_over
@@ -128,10 +129,6 @@ def move_snake():
 
     # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
     elif snake_body[len(snake_body) - 1] in fruits:
-        print(fruits)
-        print(posX - velX, posY - velY)
-        print(fruits)
-    
         fruits.remove((posX - velX, posY - velY))
         snake_body.append((posX, posY))
 
@@ -139,6 +136,14 @@ def move_snake():
         # Ved bevegelse push ny pos i snake body, pop bakerste
         snake_body.pop(0)
         snake_body.append((posX, posY))
+
+def move_snake():
+    global velX
+    global velY
+    global posX
+    global posY
+
+    hit_event()
 
     # Movement
     key = pygame.key.get_pressed()
@@ -183,6 +188,7 @@ def draw():
     draw_fruit()
     if not game_over:
         move_snake()
+        
     draw_snake()
     draw_other_snakes()
 
@@ -196,6 +202,7 @@ def show_menu():
     window = tk.Tk()
     window.title("PySnake")
     window.resizable(0, 0)
+    window.configure(bg="#2d2d2d")
 
     # Exits program if X is pressed
     window.protocol("WM_DELETE_WINDOW", sys.exit)
@@ -205,14 +212,16 @@ def show_menu():
     titleFont = Font(family="Helvetica", size=24)
 
     # Title:
-    title_label = tk.Label(text="PySnake", font=titleFont, padx=30, pady=20)
+    title_label = tk.Label(text="PySnake 🐍", font=titleFont, fg="white", bg="#2d2d2d", padx=30, pady=20)
     title_label.pack()
 
     # Name field:
-    name_label = Label(text="Name: ", font=font)
-    name_input = Entry(font=font)
+    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d",)
     name_label.pack()
+    name_input = Entry(font=font)
     name_input.pack()
+    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d",)
+    margin_label.pack()
 
     # Start game button:
     def start():
@@ -228,12 +237,12 @@ def show_menu():
     for score in highscores:
         score_text += "{}: {}\n".format(score["name"], score["score"])
 
-    score_label = tk.Label(text=score_text, font=font, padx=60, pady=15)
+    score_label = tk.Label(text=score_text, font=font, fg="white", bg="#2d2d2d", padx=60, pady=15)
     score_label.pack()
 
     # Made by text:
-    made_text = "Made by:\n Nikola Dordevic, s348139\n Jørund Topp Løvlien, s341822"
-    made_label = tk.Label(text=made_text, padx=60, pady=10)
+    made_text = "Made by:\n Nikola Dordevic, s341839\n Jørund Topp Løvlien, s341822"
+    made_label = tk.Label(text=made_text, padx=60, pady=10, fg="white", bg="#2d2d2d",)
     made_label.pack()
 
     window.mainloop()
@@ -246,14 +255,20 @@ def show_score():
     window = tk.Tk()
     window.title("PySnake")
     window.resizable(0, 0)
+    window.configure(bg="#2d2d2d")
 
     font = Font(family="Helvetica", size=12)
+    titleFont = Font(family="Helvetica", size=24)
+
+    # Title:
+    title_label = tk.Label(text="PySnake 🐍", font=titleFont, fg="white", bg="#2d2d2d", padx=30, pady=20)
+    title_label.pack()
 
     # Session score:
     session_text = "Session scores: \n"
     for snake in snakes:
        session_text += "{}: {}\n".format(snake["name"], len(snake["position"]) - 4)
-    session_label = tk.Label(text=session_text, font=font, padx=30, pady=10)
+    session_label = tk.Label(text=session_text, font=font, padx=30, pady=10, fg="white", bg="#2d2d2d")
     session_label.pack()
 
     # Highscores:
@@ -261,7 +276,7 @@ def show_score():
     for score in highscores:
         score_text += "{}: {}\n".format(score["name"], score["score"])
 
-    score_label = tk.Label(text=score_text, font=font, padx=60, pady=5)
+    score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
     
     window.mainloop()
@@ -270,7 +285,6 @@ def main():
     global run
 
     show_menu()
-    
 
     clock = pygame.time.Clock()
     threading.Thread(target=create_fruit).start()
@@ -279,13 +293,50 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-
+        
         draw()
+        
+    pygame.quit()
+    show_score()
+
+def bot_main():
+    global run
+
+    show_menu()
+    clock = pygame.time.Clock()
+    threading.Thread(target=create_fruit).start()
+
+    #Previous fruit
+    fruit = (WIDTH, HEIGHT)
+
+    while run:
+        client_info = {
+            "run": run,
+            "pos": (posX, posY),
+            "fruits": fruits,
+            "dimensions": (WIDTH, HEIGHT)
+        }
+
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        
+        old_fruit = fruit
+        fruit = closest_fruit(fruit, client_info)
+        if not fruit == old_fruit:
+            print(fruit)
+        
+        draw()
+
 
     pygame.quit()
     show_score()
 
-
+bot = True
 
 if __name__ == "__main__":
-    main()
+    if bot:
+        bot_main()
+    else:
+        main()
