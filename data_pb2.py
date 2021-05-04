@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\ndata.proto\x12\x13\x44\x41TA2410_Portfolio2\"\x0e\n\x0cNo_parameter\"!\n\tConfirmed\x12\x14\n\x0c\x63onfirmation\x18\x01 \x01(\x08\" \n\x08Position\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"i\n\x06Player\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05\x63olor\x18\x02 \x03(\x05\x12\x11\n\tgame_over\x18\x03 \x01(\x08\x12/\n\x08position\x18\x04 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position\")\n\nHigh_score\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x05\"B\n\x0bLeaderboard\x12\x33\n\nhigh_score\x18\x01 \x03(\x0b\x32\x1f.DATA2410_Portfolio2.High_score\"9\n\x06\x66ruits\x12/\n\x08position\x18\x01 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position2\xc9\x04\n\x05Snake\x12L\n\x0bsend_player\x12\x1b.DATA2410_Portfolio2.Player\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12T\n\x0fsend_high_score\x12\x1f.DATA2410_Portfolio2.High_score\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12M\n\nsend_fruit\x12\x1d.DATA2410_Portfolio2.Position\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12Q\n\x0bget_players\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1b.DATA2410_Portfolio2.Player\"\x00\x30\x01\x12X\n\x0fget_leaderboard\x12!.DATA2410_Portfolio2.No_parameter\x1a .DATA2410_Portfolio2.Leaderboard\"\x00\x12N\n\x08get_size\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1d.DATA2410_Portfolio2.Position\"\x00\x12P\n\nget_fruits\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1b.DATA2410_Portfolio2.fruits\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\ndata.proto\x12\x13\x44\x41TA2410_Portfolio2\"\x0e\n\x0cNo_parameter\"!\n\tConfirmed\x12\x14\n\x0c\x63onfirmation\x18\x01 \x01(\x08\" \n\x08Position\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"i\n\x06Player\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05\x63olor\x18\x02 \x03(\x05\x12\x11\n\tgame_over\x18\x03 \x01(\x08\x12/\n\x08position\x18\x04 \x03(\x0b\x32\x1d.DATA2410_Portfolio2.Position\")\n\nHigh_score\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05score\x18\x02 \x01(\x05\"B\n\x0bLeaderboard\x12\x33\n\nhigh_score\x18\x01 \x03(\x0b\x32\x1f.DATA2410_Portfolio2.High_score\"h\n\x0bInformation\x12+\n\x06player\x18\x01 \x01(\x0b\x32\x1b.DATA2410_Portfolio2.Player\x12,\n\x05\x66ruit\x18\x02 \x01(\x0b\x32\x1d.DATA2410_Portfolio2.Position2\xac\x03\n\x05Snake\x12T\n\x0fsend_high_score\x12\x1f.DATA2410_Portfolio2.High_score\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12M\n\nsend_fruit\x12\x1d.DATA2410_Portfolio2.Position\x1a\x1e.DATA2410_Portfolio2.Confirmed\"\x00\x12X\n\x0fget_leaderboard\x12!.DATA2410_Portfolio2.No_parameter\x1a .DATA2410_Portfolio2.Leaderboard\"\x00\x12N\n\x08get_size\x12!.DATA2410_Portfolio2.No_parameter\x1a\x1d.DATA2410_Portfolio2.Position\"\x00\x12T\n\x0fget_information\x12\x1b.DATA2410_Portfolio2.Player\x1a .DATA2410_Portfolio2.Information\"\x00\x30\x01\x62\x06proto3'
 )
 
 
@@ -245,18 +245,25 @@ _LEADERBOARD = _descriptor.Descriptor(
 )
 
 
-_FRUITS = _descriptor.Descriptor(
-  name='fruits',
-  full_name='DATA2410_Portfolio2.fruits',
+_INFORMATION = _descriptor.Descriptor(
+  name='Information',
+  full_name='DATA2410_Portfolio2.Information',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='position', full_name='DATA2410_Portfolio2.fruits.position', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='player', full_name='DATA2410_Portfolio2.Information.player', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='fruit', full_name='DATA2410_Portfolio2.Information.fruit', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -273,19 +280,20 @@ _FRUITS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=338,
-  serialized_end=395,
+  serialized_end=442,
 )
 
 _PLAYER.fields_by_name['position'].message_type = _POSITION
 _LEADERBOARD.fields_by_name['high_score'].message_type = _HIGH_SCORE
-_FRUITS.fields_by_name['position'].message_type = _POSITION
+_INFORMATION.fields_by_name['player'].message_type = _PLAYER
+_INFORMATION.fields_by_name['fruit'].message_type = _POSITION
 DESCRIPTOR.message_types_by_name['No_parameter'] = _NO_PARAMETER
 DESCRIPTOR.message_types_by_name['Confirmed'] = _CONFIRMED
 DESCRIPTOR.message_types_by_name['Position'] = _POSITION
 DESCRIPTOR.message_types_by_name['Player'] = _PLAYER
 DESCRIPTOR.message_types_by_name['High_score'] = _HIGH_SCORE
 DESCRIPTOR.message_types_by_name['Leaderboard'] = _LEADERBOARD
-DESCRIPTOR.message_types_by_name['fruits'] = _FRUITS
+DESCRIPTOR.message_types_by_name['Information'] = _INFORMATION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 No_parameter = _reflection.GeneratedProtocolMessageType('No_parameter', (_message.Message,), {
@@ -330,12 +338,12 @@ Leaderboard = _reflection.GeneratedProtocolMessageType('Leaderboard', (_message.
   })
 _sym_db.RegisterMessage(Leaderboard)
 
-fruits = _reflection.GeneratedProtocolMessageType('fruits', (_message.Message,), {
-  'DESCRIPTOR' : _FRUITS,
+Information = _reflection.GeneratedProtocolMessageType('Information', (_message.Message,), {
+  'DESCRIPTOR' : _INFORMATION,
   '__module__' : 'data_pb2'
-  # @@protoc_insertion_point(class_scope:DATA2410_Portfolio2.fruits)
+  # @@protoc_insertion_point(class_scope:DATA2410_Portfolio2.Information)
   })
-_sym_db.RegisterMessage(fruits)
+_sym_db.RegisterMessage(Information)
 
 
 
@@ -346,23 +354,13 @@ _SNAKE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=398,
-  serialized_end=983,
+  serialized_start=445,
+  serialized_end=873,
   methods=[
-  _descriptor.MethodDescriptor(
-    name='send_player',
-    full_name='DATA2410_Portfolio2.Snake.send_player',
-    index=0,
-    containing_service=None,
-    input_type=_PLAYER,
-    output_type=_CONFIRMED,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
   _descriptor.MethodDescriptor(
     name='send_high_score',
     full_name='DATA2410_Portfolio2.Snake.send_high_score',
-    index=1,
+    index=0,
     containing_service=None,
     input_type=_HIGH_SCORE,
     output_type=_CONFIRMED,
@@ -372,7 +370,7 @@ _SNAKE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='send_fruit',
     full_name='DATA2410_Portfolio2.Snake.send_fruit',
-    index=2,
+    index=1,
     containing_service=None,
     input_type=_POSITION,
     output_type=_CONFIRMED,
@@ -380,19 +378,9 @@ _SNAKE = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='get_players',
-    full_name='DATA2410_Portfolio2.Snake.get_players',
-    index=3,
-    containing_service=None,
-    input_type=_NO_PARAMETER,
-    output_type=_PLAYER,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
     name='get_leaderboard',
     full_name='DATA2410_Portfolio2.Snake.get_leaderboard',
-    index=4,
+    index=2,
     containing_service=None,
     input_type=_NO_PARAMETER,
     output_type=_LEADERBOARD,
@@ -402,7 +390,7 @@ _SNAKE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='get_size',
     full_name='DATA2410_Portfolio2.Snake.get_size',
-    index=5,
+    index=3,
     containing_service=None,
     input_type=_NO_PARAMETER,
     output_type=_POSITION,
@@ -410,12 +398,12 @@ _SNAKE = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='get_fruits',
-    full_name='DATA2410_Portfolio2.Snake.get_fruits',
-    index=6,
+    name='get_information',
+    full_name='DATA2410_Portfolio2.Snake.get_information',
+    index=4,
     containing_service=None,
-    input_type=_NO_PARAMETER,
-    output_type=_FRUITS,
+    input_type=_PLAYER,
+    output_type=_INFORMATION,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

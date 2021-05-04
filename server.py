@@ -17,17 +17,6 @@ running = True
 
 class Snake(SnakeServicer):
 
-    # Gets player information from that client
-    def send_player(self, request, context):
-        print("This sends player info to server")
-        player = Player()
-        player.name = request.name
-        player.color.extend(request.color)
-        player.game_over = request.game_over
-        player.position.extend(request.position)
-        players.append(request)
-        return Confirmed(confirmation=True)
-
     # Gets high score from a client
     def send_high_score(self, request, context):
         global leaderboard
@@ -74,12 +63,6 @@ class Snake(SnakeServicer):
         fruits.remove(request)
         return Confirmed(confirmation=True)
 
-    # Sends information about all players to a client
-    def get_players(self, request, context):
-        print("This sends players to clients")
-        for p in players:
-            yield p
-
     # Sends leaderboard to a client
     def get_leaderboard(self, request, context):
         print("This sends leaderboard to clients")
@@ -91,10 +74,53 @@ class Snake(SnakeServicer):
         return Position(x=width, y=height)
 
     # Sends information about all fruits from clients
-    def get_fruits(self, request, context):
-        print("This sends fruits to player")
-        for f in fruits:
-            yield f
+    def get_information(self, request, context):
+        print("Gets player and sends players and fruits")
+        # Gets player information and removes player from client and replaces old info with new
+        player = request
+        for p in players:  # Loops through all players to check if player is already in list
+            if player.name == p.name:  # Removes player if in players list
+                players.remove(p)
+                break
+
+        players.append(player)  # Adds player to list
+        length_fruits = len(fruits)
+        length_players = len(players)
+
+        if length_fruits >= length_players:
+            for i in range(length_fruits):
+                info = Information()
+                if i < length_players:  # Sends info about player and fruit
+                    if i == length_players - 1:  # Sends info about a fruit if on same index as requesting player
+                        info.fruit.x = fruits[i].x
+                        info.fruit.y = fruits[i].y
+                    else:  # Sends info about player as well
+                        info.player.name = players[i].name
+                        info.player.color.extend(players[i].color)
+                        info.player.game_over = players[i].game_over
+                        info.player.position.extend(players[i].position)
+                        info.fruit.x = fruits[i].x
+                        info.fruit.y = fruits[i].y
+                else:  # Sends info about a fruit if there are more fruits than players
+                    info.fruit.x = fruits[i].x
+                    info.fruit.y = fruits[i].y
+                yield info
+        else:
+            for i in range(length_players - 1):  # Will not send info about requesting player
+                info = Information()
+                if i < length_fruits:  # Sends info about player and fruit
+                    info.player.name = players[i].name
+                    info.player.color.extend(players[i].color)
+                    info.player.game_over = players[i].game_over
+                    info.player.position.extend(players[i].position)
+                    info.fruit.x = fruits[i].x
+                    info.fruit.y = fruits[i].y
+                else:  # Sends info about player if more players than fruits
+                    info.player.name = players[i].name
+                    info.player.color.extend(players[i].color)
+                    info.player.game_over = players[i].game_over
+                    info.player.position.extend(players[i].position)
+                yield info
 
 
 def empty_tile(pos):
@@ -116,7 +142,6 @@ def make_fruits():
         # more than 6 fruits
         probability = math.cos(len(fruits) / 3.5)
         if probability > random.random():
-            time.sleep(random.randint(1, 3))
 
             pos = Position()
             pos.x = random.randint(0, width)
@@ -128,7 +153,6 @@ def make_fruits():
                 pos.y = random.randint(0, height)
 
             fruits.append(pos)
-            print("New fruit at: {}".format(pos))
 
 
 def start():

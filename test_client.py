@@ -8,17 +8,15 @@ service = SnakeStub(channel)
 
 
 def run():
-    print(service.send_player(send_player()).confirmation)
-    print(service.send_high_score(send_high_score()).confirmation)
-    print(service.send_fruit(send_fruit()).confirmation)
-    print(get_players())
-    print(get_leaderboard())
-    print(get_size())
-    print(get_fruits())
+    # print(service.send_high_score(send_high_score()).confirmation)
+    # print(service.send_fruit(send_fruit()).confirmation)
+    # print(get_leaderboard())
+    # print(get_size())
+    print(get_information())
 
 
-def send_player():
-    print("Sending player...")
+def make_player():
+    print("Making player...")
     player = Player()
     player.name = "Test"
     player.color.extend([1, 2, 3])
@@ -45,15 +43,6 @@ def send_fruit():
     return position
 
 
-def get_players():
-    print("Getting players...")
-    request = service.get_players(No_parameter())
-    return_str = ""
-    for r in request:
-        return_str += "{} \n".format(r)
-    return return_str
-
-
 def get_leaderboard():
     print("Getting fruits...")
     return service.get_leaderboard(No_parameter())
@@ -64,12 +53,13 @@ def get_size():
     return format(service.get_size(No_parameter()))
 
 
-def get_fruits():
-    print("Getting players...")
-    request = service.get_fruits(No_parameter())
+def get_information():
+    print("Getting information...")
+    request = service.get_information(make_player())
     return_str = ""
     for r in request:
-        return_str += "{} \n".format(r)
+        return_str += format(r.player) + " "
+        return_str += format(r.fruit) + " "
     return return_str
 
 

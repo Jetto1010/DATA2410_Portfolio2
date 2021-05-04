@@ -7,14 +7,12 @@ package DATA2410_Portfolio2;
 
 service Snake {
     // Send to server
-    rpc send_player(Player) returns (Confirmed) {}
     rpc send_high_score(High_score) returns (Confirmed) {}
     rpc send_fruit(Position) returns (Confirmed) {}
     // Get from server
-    rpc get_players(No_parameter) returns (stream Player) {}
     rpc get_leaderboard(No_parameter) returns (Leaderboard) {}
     rpc get_size(No_parameter) returns (Position) {}
-    rpc get_fruits(No_parameter) returns (stream fruits) {}
+    rpc get_information(Player) returns (stream Information) {}
 }
 
 message No_parameter {}
@@ -44,6 +42,7 @@ message Leaderboard {
   repeated High_score high_score = 1;
 }
 
-message fruits {
-  repeated Position position = 1;
+message Information {
+  Player player = 1;
+  Position fruit = 2;
 }

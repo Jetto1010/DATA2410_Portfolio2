@@ -17,11 +17,6 @@ class SnakeStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.send_player = channel.unary_unary(
-                '/DATA2410_Portfolio2.Snake/send_player',
-                request_serializer=data__pb2.Player.SerializeToString,
-                response_deserializer=data__pb2.Confirmed.FromString,
-                )
         self.send_high_score = channel.unary_unary(
                 '/DATA2410_Portfolio2.Snake/send_high_score',
                 request_serializer=data__pb2.High_score.SerializeToString,
@@ -31,11 +26,6 @@ class SnakeStub(object):
                 '/DATA2410_Portfolio2.Snake/send_fruit',
                 request_serializer=data__pb2.Position.SerializeToString,
                 response_deserializer=data__pb2.Confirmed.FromString,
-                )
-        self.get_players = channel.unary_stream(
-                '/DATA2410_Portfolio2.Snake/get_players',
-                request_serializer=data__pb2.No_parameter.SerializeToString,
-                response_deserializer=data__pb2.Player.FromString,
                 )
         self.get_leaderboard = channel.unary_unary(
                 '/DATA2410_Portfolio2.Snake/get_leaderboard',
@@ -47,10 +37,10 @@ class SnakeStub(object):
                 request_serializer=data__pb2.No_parameter.SerializeToString,
                 response_deserializer=data__pb2.Position.FromString,
                 )
-        self.get_fruits = channel.unary_stream(
-                '/DATA2410_Portfolio2.Snake/get_fruits',
-                request_serializer=data__pb2.No_parameter.SerializeToString,
-                response_deserializer=data__pb2.fruits.FromString,
+        self.get_information = channel.unary_stream(
+                '/DATA2410_Portfolio2.Snake/get_information',
+                request_serializer=data__pb2.Player.SerializeToString,
+                response_deserializer=data__pb2.Information.FromString,
                 )
 
 
@@ -60,15 +50,9 @@ class SnakeServicer(object):
 
     """
 
-    def send_player(self, request, context):
+    def send_high_score(self, request, context):
         """Send to server
         """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def send_high_score(self, request, context):
-        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -79,15 +63,9 @@ class SnakeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def get_players(self, request, context):
+    def get_leaderboard(self, request, context):
         """Get from server
         """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def get_leaderboard(self, request, context):
-        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -98,7 +76,7 @@ class SnakeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def get_fruits(self, request, context):
+    def get_information(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -107,11 +85,6 @@ class SnakeServicer(object):
 
 def add_SnakeServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'send_player': grpc.unary_unary_rpc_method_handler(
-                    servicer.send_player,
-                    request_deserializer=data__pb2.Player.FromString,
-                    response_serializer=data__pb2.Confirmed.SerializeToString,
-            ),
             'send_high_score': grpc.unary_unary_rpc_method_handler(
                     servicer.send_high_score,
                     request_deserializer=data__pb2.High_score.FromString,
@@ -121,11 +94,6 @@ def add_SnakeServicer_to_server(servicer, server):
                     servicer.send_fruit,
                     request_deserializer=data__pb2.Position.FromString,
                     response_serializer=data__pb2.Confirmed.SerializeToString,
-            ),
-            'get_players': grpc.unary_stream_rpc_method_handler(
-                    servicer.get_players,
-                    request_deserializer=data__pb2.No_parameter.FromString,
-                    response_serializer=data__pb2.Player.SerializeToString,
             ),
             'get_leaderboard': grpc.unary_unary_rpc_method_handler(
                     servicer.get_leaderboard,
@@ -137,10 +105,10 @@ def add_SnakeServicer_to_server(servicer, server):
                     request_deserializer=data__pb2.No_parameter.FromString,
                     response_serializer=data__pb2.Position.SerializeToString,
             ),
-            'get_fruits': grpc.unary_stream_rpc_method_handler(
-                    servicer.get_fruits,
-                    request_deserializer=data__pb2.No_parameter.FromString,
-                    response_serializer=data__pb2.fruits.SerializeToString,
+            'get_information': grpc.unary_stream_rpc_method_handler(
+                    servicer.get_information,
+                    request_deserializer=data__pb2.Player.FromString,
+                    response_serializer=data__pb2.Information.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -154,23 +122,6 @@ class Snake(object):
     python -m grpc_tools.protoc -I./. --python_out=. --grpc_python_out=. ./data.proto
 
     """
-
-    @staticmethod
-    def send_player(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/send_player',
-            data__pb2.Player.SerializeToString,
-            data__pb2.Confirmed.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def send_high_score(request,
@@ -203,23 +154,6 @@ class Snake(object):
         return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/send_fruit',
             data__pb2.Position.SerializeToString,
             data__pb2.Confirmed.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def get_players(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Snake/get_players',
-            data__pb2.No_parameter.SerializeToString,
-            data__pb2.Player.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -258,7 +192,7 @@ class Snake(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def get_fruits(request,
+    def get_information(request,
             target,
             options=(),
             channel_credentials=None,
@@ -268,8 +202,8 @@ class Snake(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Snake/get_fruits',
-            data__pb2.No_parameter.SerializeToString,
-            data__pb2.fruits.FromString,
+        return grpc.experimental.unary_stream(request, target, '/DATA2410_Portfolio2.Snake/get_information',
+            data__pb2.Player.SerializeToString,
+            data__pb2.Information.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
