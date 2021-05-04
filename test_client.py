@@ -40,8 +40,8 @@ def send_high_score():
 def send_fruit():
     print("Sending fruit...")
     position = Position()
-    position.x = 34
-    position.y = 54
+    position.x = 18
+    position.y = 10
     return position
 
 

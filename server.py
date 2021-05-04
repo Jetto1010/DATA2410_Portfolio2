@@ -3,27 +3,32 @@ from data_pb2 import *
 from data_pb2_grpc import *
 import grpc
 import time
+import math
 import threading
+import random
 
 width = 100
 height = 100
 players = []
 leaderboard = []
 fruits = []
+running = True
 
 
 class Snake(SnakeServicer):
 
+    # Gets player information from that client
     def send_player(self, request, context):
-        print("This sends player to server")
+        print("This sends player info to server")
         player = Player()
         player.name = request.name
         player.color.extend(request.color)
         player.game_over = request.game_over
         player.position.extend(request.position)
-        players.append(player)
+        players.append(request)
         return Confirmed(confirmation=True)
 
+    # Gets high score from a client
     def send_high_score(self, request, context):
         global leaderboard
         # Makes the gets the high_score message
@@ -63,34 +68,71 @@ class Snake(SnakeServicer):
 
         return Confirmed(confirmation=True)
 
+    # Gets information about eaten fruit from a client
     def send_fruit(self, request, context):
         print("This sends eaten fruit to server")
-        position = Position()
-        position.x = request.x
-        position.y = request.y
-        fruits.append(position)
+        fruits.remove(request)
         return Confirmed(confirmation=True)
 
+    # Sends information about all players to a client
     def get_players(self, request, context):
         print("This sends players to clients")
         for p in players:
             yield p
 
+    # Sends leaderboard to a client
     def get_leaderboard(self, request, context):
         print("This sends leaderboard to clients")
         return Leaderboard(high_score=leaderboard)
 
+    # Sends size to a client
     def get_size(self, request, context):
         print("This sends size to clients")
         return Position(x=width, y=height)
 
+    # Sends information about all fruits from clients
     def get_fruits(self, request, context):
         print("This sends fruits to player")
         for f in fruits:
             yield f
 
 
+def empty_tile(pos):
+    # Checks if new fruit is in list of fruits
+    if pos in fruits:
+        return False
+
+    # Checks if in list of player positions
+    for p in players:
+        if pos in p.position:
+            return False
+
+    return True
+
+
+def make_fruits():
+    while True:
+        # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning
+        # more than 6 fruits
+        probability = math.cos(len(fruits) / 3.5)
+        if probability > random.random():
+            time.sleep(random.randint(1, 3))
+
+            pos = Position()
+            pos.x = random.randint(0, width)
+            pos.y = random.randint(0, height)
+
+            # Ensures that fruit never spawn twice on the same tile or tile with snake on it
+            while not empty_tile(pos):
+                pos.x = random.randint(0, width)
+                pos.y = random.randint(0, height)
+
+            fruits.append(pos)
+            print("New fruit at: {}".format(pos))
+
+
 def start():
+    global running
     # Reads inn leaderboard file and parses it to a High_score message
     file = open("leaderboard.txt", "r")
     leaderboard_str = file.read().split("\n")
@@ -107,12 +149,14 @@ def start():
     add_SnakeServicer_to_server(Snake(), server)
     server.add_insecure_port("localhost:9999")
     server.start()
+    make_fruits()
     try:
-        while True:
+        while running:
             print("server on: threads {}".format(threading.activeCount()))
             time.sleep(5)
     except KeyboardInterrupt:
         print("KeyBoardInterrupt")
+        running = False
         server.stop(0)
 
 
