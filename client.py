@@ -212,9 +212,10 @@ def draw(path):
     elif not game_over:
         move_snake()
 
+    draw_path(path)
     draw_snake()
     draw_other_snakes()
-    draw_path(path)
+    
     
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
@@ -334,8 +335,10 @@ def move_bot_snake(path):
     try:
         velX = path[1][0] - posX
         velY = path[1][1] - posY
+
+        path.pop(0)
     except:
-        velX, velY = 0, 1
+        pass
 
     posX += velX
     posY += velY
@@ -352,10 +355,17 @@ def bot_main():
     clock = pygame.time.Clock()
     threading.Thread(target=create_fruit).start()
 
-    # Previous fruit
-    fruit = (WIDTH, HEIGHT)
-    tmp_fruits = []
-    print(tmp_fruits)
+    # Starting conditions
+    client_info = {
+            "run": run,
+            "snake_body": snake_body,
+            "velocity": (velX, velY),
+            "fruits": fruits,
+            "snakes": snakes,
+            "dimensions": (WIDTH, HEIGHT)
+        }
+    fruit = fruits[0]
+    path = find_path(fruit, client_info)
 
     while run:
         clock.tick(FPS)
@@ -369,17 +379,16 @@ def bot_main():
         }
 
         fruit = closest_fruit(fruit, client_info)
-        path = find_path(fruit, client_info)
+        if path[2:4] in snakes or len(path) == 1: # LEN PATH JUST IMPLEMENTED UNTIL PATHING WITH NO RESULT FIXED
+            path = find_path(fruit, client_info)
 
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-        
         draw(path)
         
-
     pygame.quit()
     show_score()
 

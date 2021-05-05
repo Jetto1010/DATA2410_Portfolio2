@@ -73,12 +73,10 @@ def distance(p1, p2):
 
 # Find the fruit closest to the snake
 def closest_fruit(fruit, c):
-    WIDTH, HEIGHT = c["dimensions"]
     fruits = c["fruits"]
     pos = c["snake_body"][-1]
 
-    if not fruit:
-        fruit = (WIDTH, HEIGHT)
+    fruit = (float("inf"), float("inf"))
 
     if fruits:
         for f in fruits:
@@ -88,8 +86,9 @@ def closest_fruit(fruit, c):
             if new_dist < old_dist:
                 fruit = (f[0], f[1])
     else:
-        return None
+        fruit = [0]
 
+    print(fruit)
     return fruit
 
 # Find closest path to closest_fruit, all while avoiding obstacles like border and other snakes
