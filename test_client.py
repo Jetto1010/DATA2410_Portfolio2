@@ -1,6 +1,5 @@
 from data_pb2 import *
 from data_pb2_grpc import *
-import time
 import grpc
 
 channel = grpc.insecure_channel("localhost:9999")
@@ -13,12 +12,13 @@ def run():
     # print(get_leaderboard())
     # print(get_size())
     print(get_information())
+    channel.close()
 
 
 def make_player():
     print("Making player...")
     player = Player()
-    player.name = "Test"
+    player.name = "Test2"
     player.color.extend([1, 2, 3])
     player.game_over = False
     position = player.position.add()

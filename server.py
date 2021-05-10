@@ -142,6 +142,7 @@ def make_fruits():
         # more than 6 fruits
         probability = math.cos(len(fruits) / 3.5)
         if probability > random.random():
+            time.sleep(random.randint(1, 3))
 
             pos = Position()
             pos.x = random.randint(0, width)
@@ -173,7 +174,7 @@ def start():
     add_SnakeServicer_to_server(Snake(), server)
     server.add_insecure_port("localhost:9999")
     server.start()
-    make_fruits()
+    threading.Thread(target=make_fruits).start()
     try:
         while running:
             print("server on: threads {}".format(threading.activeCount()))

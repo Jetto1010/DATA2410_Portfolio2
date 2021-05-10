@@ -58,7 +58,8 @@ def create_fruit():
     global fruits
 
     while run:
-        # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning more than 6 fruits
+        # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning
+        # more than 6 fruits
         probability = cos(len(fruits) / 3.5)
         if probability > random.random():
             time.sleep(random.randint(1, 3))
@@ -93,7 +94,7 @@ snakes = [
 ]
 
 # Displays 5 highest scores ever gotten in the game
-highscores = [
+high_scores = [
     {
         "name": "nikko",
         "score": 43
@@ -113,7 +114,7 @@ def draw_other_snakes():
             screen.set_at(pos, TESTCOLOR_OTHERSNAKES)
 
 
-# Draws the fruit coordinats from the server
+# Draws the fruit coordinates from the server
 def draw_fruit():
     for pos in fruits:
         screen.set_at(pos, "red")
@@ -190,7 +191,9 @@ def draw_snake():
 
 
 # Draws the background and assets onto the window
-def draw(path):
+def draw(path=None):
+    if path is None:
+        path = []
     global game_over
 
     # Drawing background
@@ -215,16 +218,15 @@ def draw(path):
     draw_path(path)
     draw_snake()
     draw_other_snakes()
-    
-    
+    draw_path(path)
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
 
 
-# Displays a menu with highscores and a start game button
+# Displays a menu with high scores and a start game button
 def show_menu():
-    global highscores
+    global high_scores
 
     window = tk.Tk()
     window.title("PySnake")
@@ -236,10 +238,10 @@ def show_menu():
 
     # Fonts
     font = Font(family="Helvetica", size=12)
-    titleFont = Font(family="Helvetica", size=24)
+    title_font = Font(family="Helvetica", size=24)
 
     # Title:
-    title_label = tk.Label(text="PySnake 🐍", font=titleFont, fg="white", bg="#2d2d2d", padx=30, pady=20)
+    title_label = tk.Label(text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30, pady=20)
     title_label.pack()
 
     # Name field:
@@ -256,12 +258,12 @@ def show_menu():
         name = name_input.get()
         window.destroy()
 
-    startGame_button = Button(text="Start game", command=start, font=font, pady=5)
-    startGame_button.pack()
+    start_game_button = Button(text="Start game", command=start, font=font, pady=5)
+    start_game_button.pack()
 
-    # Highscores: 
-    score_text = "Highscores: \n"
-    for score in highscores:
+    # High scores:
+    score_text = "High scores: \n"
+    for score in high_scores:
         score_text += "{}: {}\n".format(score["name"], score["score"])
 
     score_label = tk.Label(text=score_text, font=font, fg="white", bg="#2d2d2d", padx=60, pady=15)
@@ -275,10 +277,10 @@ def show_menu():
     window.mainloop()
 
 
-# Displays session score, and highscores when the match is over
+# Displays session score, and high scores when the match is over
 def show_score():
     global snakes
-    global highscores
+    global high_scores
 
     window = tk.Tk()
     window.title("PySnake")
@@ -286,10 +288,10 @@ def show_score():
     window.configure(bg="#2d2d2d")
 
     font = Font(family="Helvetica", size=12)
-    titleFont = Font(family="Helvetica", size=24)
+    title_font = Font(family="Helvetica", size=24)
 
     # Title:
-    title_label = tk.Label(text="PySnake 🐍", font=titleFont, fg="white", bg="#2d2d2d", padx=30, pady=20)
+    title_label = tk.Label(text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30, pady=20)
     title_label.pack()
 
     # Session score:
@@ -299,15 +301,16 @@ def show_score():
     session_label = tk.Label(text=session_text, font=font, padx=30, pady=10, fg="white", bg="#2d2d2d")
     session_label.pack()
 
-    # Highscores:
-    score_text = "Highscores: \n"
-    for score in highscores:
+    # High scores:
+    score_text = "High scores: \n"
+    for score in high_scores:
         score_text += "{}: {}\n".format(score["name"], score["score"])
 
     score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
 
     window.mainloop()
+
 
 def main():
     global run
@@ -327,6 +330,7 @@ def main():
     pygame.quit()
     show_score()
 
+
 def move_bot_snake(path):
     global velX, velY, posX, posY
 
@@ -343,9 +347,11 @@ def move_bot_snake(path):
     posX += velX
     posY += velY
 
+
 def draw_path(path):
     for p in path:
-        screen.set_at( p, (255,215,0) )
+        screen.set_at(p, (255, 215, 0))
+
 
 def bot_main():
     global run
@@ -357,13 +363,13 @@ def bot_main():
 
     # Starting conditions
     client_info = {
-            "run": run,
-            "snake_body": snake_body,
-            "velocity": (velX, velY),
-            "fruits": fruits,
-            "snakes": snakes,
-            "dimensions": (WIDTH, HEIGHT)
-        }
+        "run": run,
+        "snake_body": snake_body,
+        "velocity": (velX, velY),
+        "fruits": fruits,
+        "snakes": snakes,
+        "dimensions": (WIDTH, HEIGHT)
+    }
     fruit = fruits[0]
     path = find_path(fruit, client_info)
 
@@ -379,7 +385,7 @@ def bot_main():
         }
 
         fruit = closest_fruit(fruit, client_info)
-        if path[2:4] in snakes or len(path) == 1: # LEN PATH JUST IMPLEMENTED UNTIL PATHING WITH NO RESULT FIXED
+        if path[2:4] in snakes or len(path) == 1:  # LEN PATH JUST IMPLEMENTED UNTIL PATHING WITH NO RESULT FIXED
             path = find_path(fruit, client_info)
 
         clock.tick(FPS)
@@ -388,11 +394,12 @@ def bot_main():
                 run = False
 
         draw(path)
-        
+
     pygame.quit()
     show_score()
 
-bot = True
+
+bot = False
 
 if __name__ == "__main__":
     if bot:
