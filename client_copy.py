@@ -78,12 +78,12 @@ def get_player_info():
 
 def get_server_info():
     global fruits
-    global snakes_proto
+    global snakes
 
     get_player_info()
     request = service.get_information(player)
     fruits = []
-    snakes_proto = []
+    snakes = []
     for r in request:
         if r.fruit:
             fruits.append((r.fruit.x, r.fruit.y))
@@ -101,7 +101,7 @@ def get_server_info():
                 "color": rgb,
                 "game_over": game_over
             }
-            snakes_proto.append(snake)
+            snakes.append(snake)
 
 
 # Draws the fruit coordinates from the server

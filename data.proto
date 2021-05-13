@@ -9,6 +9,7 @@ service Snake {
     // Send to server
     rpc send_high_score(High_score) returns (Confirmed) {}
     rpc send_fruit(Position) returns (Confirmed) {}
+    rpc send_player(Player) returns (Confirmed) {}
     // Get from server
     rpc get_leaderboard(No_parameter) returns (Leaderboard) {}
     rpc get_size(No_parameter) returns (Position) {}

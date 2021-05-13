@@ -3,7 +3,6 @@ from data_pb2 import *
 from data_pb2_grpc import *
 import grpc
 import time
-import math
 import threading
 import random
 
@@ -60,6 +59,7 @@ class Snake(SnakeServicer):
     # Gets information about eaten fruit from a client
     def send_fruit(self, request, context):
         fruits.remove(request)
+        threading.Thread(target=make_fruits).start()
         return Confirmed(confirmation=True)
 
     # Sends leaderboard to a client
@@ -118,6 +118,16 @@ class Snake(SnakeServicer):
                     info.player.position.extend(players[i].position)
                 yield info
 
+    def send_player(self, request, context):
+        player = Player()
+        player.name = request.name
+        player.color.extend(request.color)
+        player.game_over = request.game_over
+        player.position.extend(request.position)
+        print(player)
+        players.append(player)
+        return Confirmed(confirmation=True)
+
 
 def empty_tile(pos):
     # Checks if new fruit is in list of fruits
@@ -133,25 +143,25 @@ def empty_tile(pos):
 
 
 def make_fruits():
+    # Generates fruits over time
+    time.sleep(random.random() + random.randint(1, 3))
+    pos = Position()
+    pos.x = random.randint(0, width)
+    pos.y = random.randint(0, height)
+
+    # Ensures that fruit never spawn twice on the same tile or tile with snake on it
+    while not empty_tile(pos):
+        pos.x = random.randint(0, width)
+        pos.y = random.randint(0, height)
+
+    fruits.append(pos)
+
+
+def make_fruits_startup():
     while True:
-        time.sleep(0.5)
-        # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning
-        # more than 6 fruits
-        probability = math.cos(len(fruits) / 3.5)
-        if probability > random.random():
-            time.sleep(random.randint(1, 3))
-
-            pos = Position()
-            pos.x = random.randint(0, width)
-            pos.y = random.randint(0, height)
-
-            # Ensures that fruit never spawn twice on the same tile or tile with snake on it
-            while not empty_tile(pos):
-                pos.x = random.randint(0, width)
-                pos.y = random.randint(0, height)
-
-            print(pos)
-            fruits.append(pos)
+        make_fruits()
+        if len(fruits) == 6:
+            break
 
 
 def start():
@@ -172,7 +182,7 @@ def start():
     add_SnakeServicer_to_server(Snake(), server)
     server.add_insecure_port("localhost:9999")
     server.start()
-    threading.Thread(target=make_fruits).start()
+    threading.Thread(target=make_fruits_startup()).start()
     try:
         while running:
             print("server on: threads {}".format(threading.activeCount()))

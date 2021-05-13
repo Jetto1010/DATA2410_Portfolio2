@@ -11,7 +11,8 @@ def run():
     # print(service.send_fruit(send_fruit()).confirmation)
     # print(get_leaderboard())
     # print(get_size())
-    print(get_information())
+    # print(get_information())
+    print(service.send_player(make_player()).confirmation)
     channel.close()
 
 
@@ -21,9 +22,13 @@ def make_player():
     player.name = "Test2"
     player.color.extend([1, 2, 3])
     player.game_over = False
-    position = player.position.add()
-    position.x = 1
-    position.y = 2
+    positions = []
+    for i in range(5):
+        pos = Position()
+        pos.x = 3*4 + i
+        pos.y = 24
+        positions.append(pos)
+    player.position.extend(positions)
     return player
 
 
