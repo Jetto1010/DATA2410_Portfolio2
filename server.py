@@ -7,8 +7,8 @@ import math
 import threading
 import random
 
-width = 100
-height = 100
+width = 64
+height = 36
 players = []
 leaderboard = []
 fruits = []
@@ -59,23 +59,19 @@ class Snake(SnakeServicer):
 
     # Gets information about eaten fruit from a client
     def send_fruit(self, request, context):
-        print("This sends eaten fruit to server")
         fruits.remove(request)
         return Confirmed(confirmation=True)
 
     # Sends leaderboard to a client
     def get_leaderboard(self, request, context):
-        print("This sends leaderboard to clients")
         return Leaderboard(high_score=leaderboard)
 
     # Sends size to a client
     def get_size(self, request, context):
-        print("This sends size to clients")
         return Position(x=width, y=height)
 
     # Sends information about all fruits from clients
     def get_information(self, request, context):
-        print("Gets player and sends players and fruits")
         # Gets player information and removes player from client and replaces old info with new
         player = request
         for p in players:  # Loops through all players to check if player is already in list
@@ -138,6 +134,7 @@ def empty_tile(pos):
 
 def make_fruits():
     while True:
+        time.sleep(0.5)
         # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning
         # more than 6 fruits
         probability = math.cos(len(fruits) / 3.5)
@@ -153,6 +150,7 @@ def make_fruits():
                 pos.x = random.randint(0, width)
                 pos.y = random.randint(0, height)
 
+            print(pos)
             fruits.append(pos)
 
 
@@ -170,7 +168,7 @@ def start():
         high_score.score = int(split[1])
         leaderboard.append(high_score)
 
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     add_SnakeServicer_to_server(Snake(), server)
     server.add_insecure_port("localhost:9999")
     server.start()
