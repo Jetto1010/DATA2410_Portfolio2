@@ -62,6 +62,23 @@ class Snake(SnakeServicer):
         threading.Thread(target=make_fruits).start()
         return Confirmed(confirmation=True)
 
+    def send_player(self, request, context):
+        name = request.name
+        same_name = 1
+        for i in range(len(players)):  # Checks if name is same as other players
+            if name == players[i].name:
+                name += "({})".format(same_name)  # Will add number to the end of name to make it unique
+                same_name += 1
+
+        player = Player()
+        player.name = name
+        player.color.extend(request.color)
+        player.game_over = request.game_over
+        player.position.extend(request.position)
+        players.append(player)
+        print(player)
+        return Player(name=player.name)
+
     # Sends leaderboard to a client
     def get_leaderboard(self, request, context):
         return Leaderboard(high_score=leaderboard)
@@ -72,14 +89,13 @@ class Snake(SnakeServicer):
 
     # Sends information about all fruits from clients
     def get_information(self, request, context):
-        # Gets player information and removes player from client and replaces old info with new
+        # Gets player information and replaces old info with new
         player = request
-        for p in players:  # Loops through all players to check if player is already in list
-            if player.name == p.name:  # Removes player if in players list
-                players.remove(p)
+        for i in range(len(players)):  # Loops through all players to check if player is already in list
+            if player.name == players[i].name:
+                players[i] = player
                 break
 
-        players.append(player)  # Adds player to list
         length_fruits = len(fruits)
         length_players = len(players)
 
@@ -87,22 +103,17 @@ class Snake(SnakeServicer):
             for i in range(length_fruits):
                 info = Information()
                 if i < length_players:  # Sends info about player and fruit
-                    if i == length_players - 1:  # Sends info about a fruit if on same index as requesting player
-                        info.fruit.x = fruits[i].x
-                        info.fruit.y = fruits[i].y
-                    else:  # Sends info about player as well
-                        info.player.name = players[i].name
-                        info.player.color.extend(players[i].color)
-                        info.player.game_over = players[i].game_over
-                        info.player.position.extend(players[i].position)
-                        info.fruit.x = fruits[i].x
-                        info.fruit.y = fruits[i].y
+                    info.player.name = players[i].name
+                    info.player.color.extend(players[i].color)
+                    info.player.game_over = players[i].game_over
+                    info.player.position.extend(players[i].position)
+                    info.fruit.x = fruits[i].x
+                    info.fruit.y = fruits[i].y
                 else:  # Sends info about a fruit if there are more fruits than players
                     info.fruit.x = fruits[i].x
                     info.fruit.y = fruits[i].y
-                yield info
         else:
-            for i in range(length_players - 1):  # Will not send info about requesting player
+            for i in range(length_players):
                 info = Information()
                 if i < length_fruits:  # Sends info about player and fruit
                     info.player.name = players[i].name
@@ -117,16 +128,6 @@ class Snake(SnakeServicer):
                     info.player.game_over = players[i].game_over
                     info.player.position.extend(players[i].position)
                 yield info
-
-    def send_player(self, request, context):
-        player = Player()
-        player.name = request.name
-        player.color.extend(request.color)
-        player.game_over = request.game_over
-        player.position.extend(request.position)
-        print(player)
-        players.append(player)
-        return Confirmed(confirmation=True)
 
 
 def empty_tile(pos):

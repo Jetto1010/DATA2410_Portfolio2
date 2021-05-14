@@ -30,7 +30,7 @@ class SnakeStub(object):
         self.send_player = channel.unary_unary(
                 '/DATA2410_Portfolio2.Snake/send_player',
                 request_serializer=data__pb2.Player.SerializeToString,
-                response_deserializer=data__pb2.Confirmed.FromString,
+                response_deserializer=data__pb2.Player.FromString,
                 )
         self.get_leaderboard = channel.unary_unary(
                 '/DATA2410_Portfolio2.Snake/get_leaderboard',
@@ -109,7 +109,7 @@ def add_SnakeServicer_to_server(servicer, server):
             'send_player': grpc.unary_unary_rpc_method_handler(
                     servicer.send_player,
                     request_deserializer=data__pb2.Player.FromString,
-                    response_serializer=data__pb2.Confirmed.SerializeToString,
+                    response_serializer=data__pb2.Player.SerializeToString,
             ),
             'get_leaderboard': grpc.unary_unary_rpc_method_handler(
                     servicer.get_leaderboard,
@@ -186,7 +186,7 @@ class Snake(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/DATA2410_Portfolio2.Snake/send_player',
             data__pb2.Player.SerializeToString,
-            data__pb2.Confirmed.FromString,
+            data__pb2.Player.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
