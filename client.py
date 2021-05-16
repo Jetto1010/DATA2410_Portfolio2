@@ -11,9 +11,10 @@ from bot import *
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 10
+FPS = 20
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
+bot = 0
 pygame.display.set_caption("PySnake")
 
 screen = pygame.Surface((WIDTH, HEIGHT))
@@ -211,7 +212,7 @@ def draw(path=None):
     # Drawing assets
     draw_fruit()
     if not game_over and bot:
-        move_bot_snake(path)
+        move_bot_snake(path, fruit)
     elif not game_over:
         move_snake()
 
@@ -245,16 +246,24 @@ def show_menu():
     title_label.pack()
 
     # Name field:
-    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d", )
+    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d")
     name_label.pack()
     name_input = Entry(font=font)
     name_input.pack()
-    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d", )
+    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label.pack()
+    i = IntVar()
+    bot_checkbox = Checkbutton(text="Run as bot", variable=i, font=font, indicatoron = True)
+    bot_checkbox.pack()
+    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
     # Start game button:
     def start():
         global name
+        global bot
+        bot = i.get()
+        print("BOT: {}".format(bot))
         name = name_input.get()
         window.destroy()
 
@@ -315,8 +324,6 @@ def show_score():
 def main():
     global run
 
-    show_menu()
-
     clock = pygame.time.Clock()
     threading.Thread(target=create_fruit).start()
     while run:
@@ -357,7 +364,6 @@ def bot_main():
     global run
     global fruits
 
-    show_menu()
     clock = pygame.time.Clock()
     threading.Thread(target=create_fruit).start()
 
@@ -398,11 +404,10 @@ def bot_main():
     pygame.quit()
     show_score()
 
-
-bot = False
-
 if __name__ == "__main__":
-    if bot:
+    show_menu()
+
+    if bot == 1:
         bot_main()
     else:
         main()
