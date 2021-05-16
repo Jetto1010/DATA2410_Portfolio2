@@ -10,7 +10,7 @@ import sys
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 15
+FPS = 2
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 pygame.display.set_caption("PySnake")
@@ -55,7 +55,6 @@ player.color.extend(rand_light_color())
 fruits = []
 leaderboard = Leaderboard()
 snakes = []
-snakes_proto = []
 
 
 def draw_other_snakes():
@@ -72,6 +71,8 @@ def get_player_info():
         p = Position()
         p.x = pos[0]
         p.y = pos[1]
+        positions.append(p)
+    del player.position[:]
     player.position.extend(positions)
     return
 
@@ -80,14 +81,14 @@ def get_server_info():
     global fruits
     global snakes
 
-    get_player_info()
-    request = service.get_information(player)
     fruits = []
     snakes = []
+    get_player_info()
+    request = service.get_information(player)
     for r in request:
         if r.fruit:
             fruits.append((r.fruit.x, r.fruit.y))
-        if r.player:
+        if r.player.game_over is False:
             positions = []
             for pos in r.player.position:
                 positions.append((pos.x, pos.y))
@@ -126,9 +127,9 @@ def hit_event():
 
     hit_snakes = False
 
-    for snake in snakes:
-        if snake_body[len(snake_body) - 1] in snake["position"]:
-            hit_snakes = True
+    #for snake in snakes:
+     #   if snake_body[len(snake_body) - 1] in snake["position"] and not snake_body[len(snake_body) - 1] in snake_body[:-1]:
+      #      hit_snakes = True
 
     # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
     # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
@@ -178,10 +179,10 @@ def move_snake():
     posY += velY
 
 
-def draw_snake():
+# def draw_snake():
     # Draws every "pixel" body of the snake
-    for pos in snake_body:
-        screen.set_at(pos, SNAKE_COLOR)
+    # for pos in snake_body:
+        # screen.set_at(pos, SNAKE_COLOR)
 
 
 # Draws the background and assets onto the window
@@ -203,8 +204,9 @@ def draw(path=None):
             if (x + offset) % 2 == 0:
                 screen.set_at((x, y), GRAY)
 
-    get_server_info()
+    # Gets info from server before drawing assets
 
+    get_server_info()
     # Drawing assets
     draw_fruit()
     if not game_over and bot:
@@ -214,7 +216,7 @@ def draw(path=None):
 
     if bot:
         draw_path(path)
-    draw_snake()
+    # draw_snake()
     draw_other_snakes()
     if bot:
         draw_path(path)
@@ -318,6 +320,9 @@ def main():
     show_menu()
 
     clock = pygame.time.Clock()
+    get_player_info()
+    player_request = service.send_player(player)  # Sends server info about a new player
+    player.name = player_request.name  # If name is not unique, player will get new one
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():

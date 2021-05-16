@@ -58,11 +58,13 @@ class Snake(SnakeServicer):
 
     # Gets information about eaten fruit from a client
     def send_fruit(self, request, context):
+        global fruits
         fruits.remove(request)
         threading.Thread(target=make_fruits).start()
         return Confirmed(confirmation=True)
 
     def send_player(self, request, context):
+        global players
         name = request.name
         same_name = 1
         for i in range(len(players)):  # Checks if name is same as other players
@@ -76,7 +78,6 @@ class Snake(SnakeServicer):
         player.game_over = request.game_over
         player.position.extend(request.position)
         players.append(player)
-        print(player)
         return Player(name=player.name)
 
     # Sends leaderboard to a client
@@ -89,6 +90,7 @@ class Snake(SnakeServicer):
 
     # Sends information about all fruits from clients
     def get_information(self, request, context):
+        global players
         # Gets player information and replaces old info with new
         player = request
         for i in range(len(players)):  # Loops through all players to check if player is already in list
@@ -112,6 +114,8 @@ class Snake(SnakeServicer):
                 else:  # Sends info about a fruit if there are more fruits than players
                     info.fruit.x = fruits[i].x
                     info.fruit.y = fruits[i].y
+                    info.player.game_over = True
+                yield info
         else:
             for i in range(length_players):
                 info = Information()
@@ -159,6 +163,7 @@ def make_fruits():
 
 
 def make_fruits_startup():
+    global fruits
     while True:
         make_fruits()
         if len(fruits) == 6:
