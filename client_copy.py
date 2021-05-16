@@ -10,7 +10,7 @@ import sys
 
 WIDTH, HEIGHT = 64, 36
 WIN_SCALE = 20
-FPS = 2
+FPS = 15
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 pygame.display.set_caption("PySnake")
