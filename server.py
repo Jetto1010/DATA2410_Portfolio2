@@ -131,6 +131,7 @@ class Snake(SnakeServicer):
                     info.player.color.extend(players[i].color)
                     info.player.game_over = players[i].game_over
                     info.player.position.extend(players[i].position)
+                    info.fruit.x = -1
                 yield info
 
 

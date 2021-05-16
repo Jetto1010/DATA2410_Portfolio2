@@ -8,14 +8,17 @@ import pygame
 import random
 import sys
 
-WIDTH, HEIGHT = 64, 36
+pygame.display.set_caption("PySnake")
+channel = grpc.insecure_channel("localhost:9999")
+service = SnakeStub(channel)
+size = service.get_size(No_parameter())
+WIDTH = size.x
+HEIGHT = size.y
 WIN_SCALE = 20
 FPS = 15
 run = True
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-pygame.display.set_caption("PySnake")
-channel = grpc.insecure_channel("localhost:9999")
-service = SnakeStub(channel)
+
 
 screen = pygame.Surface((WIDTH, HEIGHT))
 
@@ -49,7 +52,6 @@ game_over = False
 player = Player()
 player.name = name
 player.color.extend(rand_light_color())
-
 
 # Assets
 fruits = []
@@ -86,7 +88,7 @@ def get_server_info():
     get_player_info()
     request = service.get_information(player)
     for r in request:
-        if r.fruit:
+        if r.fruit.x != -1:
             fruits.append((r.fruit.x, r.fruit.y))
         if r.player.game_over is False:
             positions = []
@@ -127,9 +129,9 @@ def hit_event():
 
     hit_snakes = False
 
-    #for snake in snakes:
-     #   if snake_body[len(snake_body) - 1] in snake["position"] and not snake_body[len(snake_body) - 1] in snake_body[:-1]:
-      #      hit_snakes = True
+    # for snake in snakes:
+    # if snake_body[len(snake_body) - 1] in snake["position"] and not snake_body[len(snake_body) - 1] in snake_body[:-1]:
+    #     hit_snakes = True
 
     # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
     # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
@@ -179,12 +181,6 @@ def move_snake():
     posY += velY
 
 
-# def draw_snake():
-    # Draws every "pixel" body of the snake
-    # for pos in snake_body:
-        # screen.set_at(pos, SNAKE_COLOR)
-
-
 # Draws the background and assets onto the window
 def draw(path=None):
     if path is None:
@@ -216,7 +212,6 @@ def draw(path=None):
 
     if bot:
         draw_path(path)
-    # draw_snake()
     draw_other_snakes()
     if bot:
         draw_path(path)
@@ -373,6 +368,11 @@ def bot_main():
         "snakes": snakes,
         "dimensions": (WIDTH, HEIGHT)
     }
+
+    get_player_info()
+    player_request = service.send_player(player)  # Sends server info about a new player
+    player.name = player_request.name  # If name is not unique, player will get new one
+    get_server_info()
     fruit = fruits[0]
     path = find_path(fruit, client_info)
 
