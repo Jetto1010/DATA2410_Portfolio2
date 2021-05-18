@@ -17,8 +17,8 @@ HEIGHT = size.y
 WIN_SCALE = 20
 FPS = 15
 run = True
+bot = 0
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-
 
 screen = pygame.Surface((WIDTH, HEIGHT))
 
@@ -245,12 +245,20 @@ def show_menu():
     name_label.pack()
     name_input = Entry(font=font)
     name_input.pack()
-    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d", )
+    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label.pack()
+    i = IntVar()
+    bot_checkbox = Checkbutton(text="Run as bot", variable=i, font=font, indicatoron=True)
+    bot_checkbox.pack()
+    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
     # Start game button:
     def start():
         global name
+        global bot
+        bot = i.get()
+        print("BOT: {}".format(bot))
         name = name_input.get()
         window.destroy()
 
@@ -312,8 +320,6 @@ def show_score():
 def main():
     global run
 
-    show_menu()
-
     clock = pygame.time.Clock()
     get_player_info()
     player_request = service.send_player(player)  # Sends server info about a new player
@@ -356,7 +362,6 @@ def bot_main():
     global run
     global fruits
 
-    show_menu()
     clock = pygame.time.Clock()
 
     # Starting conditions
@@ -402,10 +407,10 @@ def bot_main():
     show_score()
 
 
-bot = False
-
 if __name__ == "__main__":
-    if bot:
+    show_menu()
+
+    if bot == 1:
         bot_main()
     else:
         main()

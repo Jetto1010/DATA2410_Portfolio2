@@ -1,21 +1,24 @@
-import pygame
-import time
-import random
-import threading
-from math import *
-import tkinter as tk
+from data_pb2 import *
+from data_pb2_grpc import *
+from bot import *
 from tkinter.font import Font
 from tkinter import *
+import tkinter as tk
+import pygame
+import random
 import sys
-from bot import *
 
-WIDTH, HEIGHT = 64, 36
-WIN_SCALE = 20
-FPS = 20
-run = True
-WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-bot = 0
 pygame.display.set_caption("PySnake")
+channel = grpc.insecure_channel("localhost:9999")
+service = SnakeStub(channel)
+size = service.get_size(No_parameter())
+WIDTH = size.x
+HEIGHT = size.y
+WIN_SCALE = 20
+FPS = 15
+run = True
+bot = 0
+WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 
 screen = pygame.Surface((WIDTH, HEIGHT))
 
@@ -46,73 +49,62 @@ snake_body = [(randX, randY + 3), (randX, randY + 2), (randX, randY + 1), (randX
 posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
 game_over = False
 
-snake = {
-    "name": name,
-    "position": snake_body,
-    "color": SNAKE_COLOR,
-    "game_over": game_over
-}
-
-
-# Test data of fruit. This function is supposed to run on the server
-def create_fruit():
-    global fruits
-
-    while run:
-        # Cosine function where the return gets closer to 0 when the amount of fruits approaches 6. 0% of spawning
-        # more than 6 fruits
-        probability = cos(len(fruits) / 3.5)
-        if probability > random.random():
-            time.sleep(random.randint(1, 3))
-
-            x = random.randint(0, WIDTH)
-            y = random.randint(0, HEIGHT)
-
-            # Ensures that fruit never spawn twice on the same tile
-            while (x, y) in fruits:
-                x = random.randint(0, WIDTH)
-                y = random.randint(0, HEIGHT)
-
-            fruits.append((x, y))
-
+player = Player()
+player.name = name
+player.color.extend(rand_light_color())
 
 # Assets
-fruits = [(ceil(WIDTH / 2), ceil(HEIGHT / 2))]
-snakes = [
-    {
-        "name": "jetto",
-        "position": [(30, 4), (30, 3), (30, 2), (30, 1)],
-        "color": "random color",
-        "game_over": False
-    },
-
-    {
-        "name": "nikko",
-        "position": [(40, 4), (40, 3), (40, 2), (40, 1)],
-        "color": "random color",
-        "game_over": False
-    }
-]
-
-# Displays 5 highest scores ever gotten in the game
-high_scores = [
-    {
-        "name": "nikko",
-        "score": 43
-    },
-    {
-        "name": "jetto",
-        "score": -3
-    }
-]
+fruits = []
+leaderboard = Leaderboard()
+snakes = []
 
 
 def draw_other_snakes():
-    global snakes
-
     for snake in snakes:
         for pos in snake["position"]:
             screen.set_at(pos, TESTCOLOR_OTHERSNAKES)
+
+
+# Updates information about player
+def get_player_info():
+    player.game_over = game_over
+    positions = []
+    for pos in snake_body:
+        p = Position()
+        p.x = pos[0]
+        p.y = pos[1]
+        positions.append(p)
+    del player.position[:]
+    player.position.extend(positions)
+    return
+
+
+def get_server_info():
+    global fruits
+    global snakes
+
+    fruits = []
+    snakes = []
+    get_player_info()
+    request = service.get_information(player)
+    for r in request:
+        if r.fruit.x != -1:
+            fruits.append((r.fruit.x, r.fruit.y))
+        if r.player.game_over is False:
+            positions = []
+            for pos in r.player.position:
+                positions.append((pos.x, pos.y))
+            rgb = []
+            for color in r.player.color:
+                rgb.append(color)
+
+            snake = {
+                "name": r.player.name,
+                "position": positions,
+                "color": rgb,
+                "game_over": game_over
+            }
+            snakes.append(snake)
 
 
 # Draws the fruit coordinates from the server
@@ -137,9 +129,9 @@ def hit_event():
 
     hit_snakes = False
 
-    for snake in snakes:
-        if snake_body[len(snake_body) - 1] in snake["position"]:
-            hit_snakes = True
+    # for snake in snakes:
+    # if snake_body[len(snake_body) - 1] in snake["position"] and not snake_body[len(snake_body) - 1] in snake_body[:-1]:
+    #     hit_snakes = True
 
     # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
     # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
@@ -149,8 +141,12 @@ def hit_event():
 
     # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
     elif snake_body[len(snake_body) - 1] in fruits:
-        fruits.remove((posX - velX, posY - velY))
-        snake_body.append((posX, posY))
+        fruit = Position()
+        fruit.x = posX - velX
+        fruit.y = posY - velY
+        if service.send_fruit(fruit).confirmation:
+            fruits.remove((posX - velX, posY - velY))
+            snake_body.append((posX, posY))
 
     else:
         # Ved bevegelse push ny pos i snake body, pop bakerste
@@ -185,16 +181,11 @@ def move_snake():
     posY += velY
 
 
-def draw_snake():
-    # Draws every "pixel" body of the snake
-    for pos in snake_body:
-        screen.set_at(pos, SNAKE_COLOR)
-
-
 # Draws the background and assets onto the window
 def draw(path=None):
     if path is None:
         path = []
+
     global game_over
 
     # Drawing background
@@ -209,17 +200,21 @@ def draw(path=None):
             if (x + offset) % 2 == 0:
                 screen.set_at((x, y), GRAY)
 
+    # Gets info from server before drawing assets
+
+    get_server_info()
     # Drawing assets
     draw_fruit()
     if not game_over and bot:
-        move_bot_snake(path, fruit)
+        move_bot_snake(path)
     elif not game_over:
         move_snake()
 
-    draw_path(path)
-    draw_snake()
+    if bot:
+        draw_path(path)
     draw_other_snakes()
-    draw_path(path)
+    if bot:
+        draw_path(path)
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
@@ -227,7 +222,7 @@ def draw(path=None):
 
 # Displays a menu with high scores and a start game button
 def show_menu():
-    global high_scores
+    global leaderboard
 
     window = tk.Tk()
     window.title("PySnake")
@@ -246,14 +241,14 @@ def show_menu():
     title_label.pack()
 
     # Name field:
-    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d")
+    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d", )
     name_label.pack()
     name_input = Entry(font=font)
     name_input.pack()
     margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
     i = IntVar()
-    bot_checkbox = Checkbutton(text="Run as bot", variable=i, font=font, indicatoron = True)
+    bot_checkbox = Checkbutton(text="Run as bot", variable=i, font=font, indicatoron=True)
     bot_checkbox.pack()
     margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
@@ -272,8 +267,9 @@ def show_menu():
 
     # High scores:
     score_text = "High scores: \n"
-    for score in high_scores:
-        score_text += "{}: {}\n".format(score["name"], score["score"])
+    leaderboard = service.get_leaderboard(No_parameter())
+    for score in leaderboard.high_score:
+        score_text += "{}: {}\n".format(score.name, score.score)
 
     score_label = tk.Label(text=score_text, font=font, fg="white", bg="#2d2d2d", padx=60, pady=15)
     score_label.pack()
@@ -289,7 +285,7 @@ def show_menu():
 # Displays session score, and high scores when the match is over
 def show_score():
     global snakes
-    global high_scores
+    global leaderboard
 
     window = tk.Tk()
     window.title("PySnake")
@@ -312,8 +308,8 @@ def show_score():
 
     # High scores:
     score_text = "High scores: \n"
-    for score in high_scores:
-        score_text += "{}: {}\n".format(score["name"], score["score"])
+    for score in leaderboard.high_score:
+        score_text += "{}: {}\n".format(score.name, score.score)
 
     score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
@@ -325,7 +321,9 @@ def main():
     global run
 
     clock = pygame.time.Clock()
-    threading.Thread(target=create_fruit).start()
+    get_player_info()
+    player_request = service.send_player(player)  # Sends server info about a new player
+    player.name = player_request.name  # If name is not unique, player will get new one
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -348,7 +346,7 @@ def move_bot_snake(path):
         velY = path[1][1] - posY
 
         path.pop(0)
-    except:
+    except IndexError:
         pass
 
     posX += velX
@@ -365,7 +363,6 @@ def bot_main():
     global fruits
 
     clock = pygame.time.Clock()
-    threading.Thread(target=create_fruit).start()
 
     # Starting conditions
     client_info = {
@@ -376,6 +373,11 @@ def bot_main():
         "snakes": snakes,
         "dimensions": (WIDTH, HEIGHT)
     }
+
+    get_player_info()
+    player_request = service.send_player(player)  # Sends server info about a new player
+    player.name = player_request.name  # If name is not unique, player will get new one
+    get_server_info()
     fruit = fruits[0]
     path = find_path(fruit, client_info)
 
@@ -403,6 +405,7 @@ def bot_main():
 
     pygame.quit()
     show_score()
+
 
 if __name__ == "__main__":
     show_menu()
