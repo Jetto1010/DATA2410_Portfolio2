@@ -41,7 +41,7 @@ BLACK = (26, 26, 26)
 GRAY = (38, 38, 38)
 
 # Snake attributes
-name = "Guest"
+snake_name = ""
 velX, velY = 1, 0
 randX = random.randint(2, WIDTH - 10)
 randY = random.randint(2, HEIGHT - 4)
@@ -50,7 +50,6 @@ posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
 game_over = False
 
 player = Player()
-player.name = name
 player.color.extend(rand_light_color())
 
 # Assets
@@ -130,7 +129,7 @@ def hit_event():
     hit_snakes = False
 
     # for snake in snakes:
-    # if snake_body[len(snake_body) - 1] in snake["position"] and not snake_body[len(snake_body) - 1] in snake_body[:-1]:
+    #   if snake_body[len(snake_body) - 1] in snake["position"]: Må sjekk om er seg selv
     #     hit_snakes = True
 
     # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
@@ -255,11 +254,11 @@ def show_menu():
 
     # Start game button:
     def start():
-        global name
+        global snake_name
         global bot
         bot = i.get()
         print("BOT: {}".format(bot))
-        name = name_input.get()
+        snake_name = name_input.get()
         window.destroy()
 
     start_game_button = Button(text="Start game", command=start, font=font, pady=5)
@@ -268,8 +267,8 @@ def show_menu():
     # High scores:
     score_text = "High scores: \n"
     leaderboard = service.get_leaderboard(No_parameter())
-    for score in leaderboard.high_score:
-        score_text += "{}: {}\n".format(score.name, score.score)
+    for i in reversed(range(len(leaderboard.high_score))):
+        score_text += "{}: {}\n".format(leaderboard.high_score[i].name, leaderboard.high_score[i].score)
 
     score_label = tk.Label(text=score_text, font=font, fg="white", bg="#2d2d2d", padx=60, pady=15)
     score_label.pack()
@@ -308,8 +307,9 @@ def show_score():
 
     # High scores:
     score_text = "High scores: \n"
-    for score in leaderboard.high_score:
-        score_text += "{}: {}\n".format(score.name, score.score)
+    for i in reversed(range(len(leaderboard.high_score))):
+        print(i)
+        score_text += "{}: {}\n".format(leaderboard.high_score[i].name, leaderboard.high_score[i].score)
 
     score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
@@ -320,8 +320,9 @@ def show_score():
 def main():
     global run
 
+    player.name = snake_name  # Set player name to input name
     clock = pygame.time.Clock()
-    get_player_info()
+    get_player_info()  # Updates player info
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
     while run:

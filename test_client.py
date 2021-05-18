@@ -7,12 +7,12 @@ service = SnakeStub(channel)
 
 
 def run():
-    # print(service.send_high_score(send_high_score()).confirmation)
+    print(service.send_high_score(send_high_score()).confirmation)
     # print(service.send_fruit(send_fruit()).confirmation)
     # print(get_leaderboard())
     # print(get_size())
     # print(get_information())
-    print(service.send_player(make_player()).confirmation)
+    # print(service.send_player(make_player()).confirmation)
     channel.close()
 
 
@@ -36,7 +36,7 @@ def send_high_score():
     print("Sending high score...")
     high_score = High_score()
     high_score.name = "Test_high"
-    high_score.score = 6
+    high_score.score = 7
     return high_score
 
 
