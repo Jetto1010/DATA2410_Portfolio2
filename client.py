@@ -129,12 +129,14 @@ def hit_event():
     # Checks if snake is in another snake but not in its own snake
     for snake in snakes:
         if snake_body[len(snake_body) - 1] in snake["position"] and snake_name != snake["name"]:
+            print("HIT SNAKES")
             hit_snakes = True
 
     # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
     # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
     # tråkke over kroppen
     if hit_self or hit_border or hit_snakes:
+        print("HIT SELF OR BORDER")
         game_over = True
 
     # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
@@ -239,13 +241,17 @@ def show_menu():
     # Name field:
     name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d", )
     name_label.pack()
+
     name_input = Entry(font=font)
     name_input.pack()
+
     margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
-    i = IntVar()
-    bot_checkbox = Checkbutton(text="Run as bot", variable=i, font=font, indicatoron=True)
+
+    ib = IntVar()
+    bot_checkbox = Checkbutton(text="Run as bot", variable=ib, font=font, indicatoron=True)
     bot_checkbox.pack()
+
     margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
@@ -254,8 +260,8 @@ def show_menu():
         global snake_name
         global bot
 
-        # bot = i.get()
-        print("BOT: {}".format(bot))
+        bot = ib.get()
+
         snake_name = name_input.get()
         window.destroy()
 
@@ -355,6 +361,8 @@ def move_bot_snake(path):
     except IndexError:
         pass
 
+    print("VELOCITY: {}, {}".format(velX, velY))
+    
     posX += velX
     posY += velY
 
@@ -367,8 +375,10 @@ def draw_path(path):
 def bot_main():
     global run
     global fruits
-    global posX
-    global posY
+    global posX, posY
+    global velX, velY
+    global snakes
+    global WIDTH, HEIGHT
 
     clock = pygame.time.Clock()
 
@@ -422,6 +432,7 @@ def bot_main():
 if __name__ == "__main__":
     show_menu()
 
+    print(bot)
     if bot == 1:
         bot_main()
     else:

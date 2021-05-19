@@ -88,7 +88,6 @@ def closest_fruit(fruit, c):
     else:
         fruit = [0]
 
-    print(fruit)
     return fruit
 
 # Find closest path to closest_fruit, all while avoiding obstacles like border and other snakes
