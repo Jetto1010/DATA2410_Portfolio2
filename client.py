@@ -36,7 +36,6 @@ def rand_light_color():
 
 
 SNAKE_COLOR = rand_light_color()
-TESTCOLOR_OTHERSNAKES = (255, 132, 116)
 BLACK = (26, 26, 26)
 GRAY = (38, 38, 38)
 
@@ -45,8 +44,8 @@ snake_name = ""
 velX, velY = 1, 0
 randX = random.randint(2, WIDTH - 10)
 randY = random.randint(2, HEIGHT - 4)
-snake_body = [(randX, randY + 3), (randX, randY + 2), (randX, randY + 1), (randX, randY)]
-posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
+snake_body = []
+posX, posY = None, None
 game_over = False
 
 player = Player()
@@ -54,14 +53,13 @@ player.color.extend(rand_light_color())
 
 # Assets
 fruits = []
-leaderboard = Leaderboard()
 snakes = []
 
 
 def draw_other_snakes():
     for snake in snakes:
         for pos in snake["position"]:
-            screen.set_at(pos, TESTCOLOR_OTHERSNAKES)
+            screen.set_at(pos, snake["color"])
 
 
 # Updates information about player
@@ -128,9 +126,10 @@ def hit_event():
 
     hit_snakes = False
 
-    # for snake in snakes:
-    #   if snake_body[len(snake_body) - 1] in snake["position"]: Må sjekk om er seg selv
-    #     hit_snakes = True
+    # Checks if snake is in another snake but not in its own snake
+    for snake in snakes:
+        if snake_body[len(snake_body) - 1] in snake["position"] and snake_name != snake["name"]:
+            hit_snakes = True
 
     # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
     # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
@@ -221,8 +220,6 @@ def draw(path=None):
 
 # Displays a menu with high scores and a start game button
 def show_menu():
-    global leaderboard
-
     window = tk.Tk()
     window.title("PySnake")
     window.resizable(0, 0)
@@ -256,7 +253,8 @@ def show_menu():
     def start():
         global snake_name
         global bot
-        bot = i.get()
+
+        # bot = i.get()
         print("BOT: {}".format(bot))
         snake_name = name_input.get()
         window.destroy()
@@ -284,7 +282,6 @@ def show_menu():
 # Displays session score, and high scores when the match is over
 def show_score():
     global snakes
-    global leaderboard
 
     window = tk.Tk()
     window.title("PySnake")
@@ -299,16 +296,14 @@ def show_score():
     title_label.pack()
 
     # Session score:
-    session_text = "Session scores: \n"
-    for snake in snakes:
-        session_text += "{}: {}\n".format(snake["name"], len(snake["position"]) - 4)
+    session_text = "Session score: {}".format(len(snake_body) - 4)
     session_label = tk.Label(text=session_text, font=font, padx=30, pady=10, fg="white", bg="#2d2d2d")
     session_label.pack()
 
     # High scores:
     score_text = "High scores: \n"
+    leaderboard = service.get_leaderboard(No_parameter())
     for i in reversed(range(len(leaderboard.high_score))):
-        print(i)
         score_text += "{}: {}\n".format(leaderboard.high_score[i].name, leaderboard.high_score[i].score)
 
     score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
@@ -319,12 +314,18 @@ def show_score():
 
 def main():
     global run
+    global posX
+    global posY
 
     player.name = snake_name  # Set player name to input name
     clock = pygame.time.Clock()
     get_player_info()  # Updates player info
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
+    # Gets empty tiles from server
+    for pos in player_request.position:
+        snake_body.append((pos.x, pos.y))
+    posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -334,6 +335,10 @@ def main():
         draw()
 
     pygame.quit()
+    high_score = High_score()
+    high_score.name = snake_name
+    high_score.score = len(snake_body) - 4
+    service.send_high_score(high_score)
     show_score()
 
 
@@ -362,6 +367,8 @@ def draw_path(path):
 def bot_main():
     global run
     global fruits
+    global posX
+    global posY
 
     clock = pygame.time.Clock()
 
@@ -378,6 +385,10 @@ def bot_main():
     get_player_info()
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
+    # Gets empty tiles from server
+    for pos in player_request.position:
+        snake_body.append((pos.x, pos.y))
+    posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
     get_server_info()
     fruit = fruits[0]
     path = find_path(fruit, client_info)

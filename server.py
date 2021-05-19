@@ -76,9 +76,34 @@ class Snake(SnakeServicer):
         player.name = name
         player.color.extend(request.color)
         player.game_over = request.game_over
-        player.position.extend(request.position)
+        # Creates empty array for snake position
+        positions = [None] * 4
+        all_tiles_empty = False
+        # Checks if tiles are empty and will select new tiles if not empty
+        while not all_tiles_empty:
+            pos = Position()
+            pos.x = random.randint(4, width - 4)
+            pos.y = random.randint(4, height - 3)
+            # Checks if head tile is empty
+            while not empty_tile(pos):
+                pos.x = random.randint(4, width - 4)
+                pos.y = random.randint(4, height - 4)
+
+            for i in range(len(positions)):
+                temp_pos = Position()
+                temp_pos.x = pos.x
+                temp_pos.y = pos.y + (3 - i)
+                # Places all tiles in array if they are empty
+                if empty_tile(temp_pos):
+                    positions[i] = temp_pos
+                    if i == len(positions) - 1:
+                        all_tiles_empty = True
+                else:
+                    break
+
+        player.position.extend(positions)
         players.append(player)
-        return Player(name=player.name)
+        return player
 
     # Sends leaderboard to a client
     def get_leaderboard(self, request, context):
@@ -149,7 +174,9 @@ def empty_tile(pos):
 
 
 def make_fruits():
+    global fruits
     # Generates fruits over time
+    print("Hello making new fruit at {}".format(threading.currentThread()))
     time.sleep(random.random() + random.randint(1, 3))
     pos = Position()
     pos.x = random.randint(0, width)
@@ -161,6 +188,7 @@ def make_fruits():
         pos.y = random.randint(0, height)
 
     fruits.append(pos)
+    print("Made fruit at {}".format(threading.currentThread()))
 
 
 def make_fruits_startup():
