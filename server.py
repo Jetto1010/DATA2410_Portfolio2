@@ -191,12 +191,10 @@ def make_fruits():
     print("Made fruit at {}".format(threading.currentThread()))
 
 
-def make_fruits_startup():
+def make_fruits_startup(number_of_fruits):
     global fruits
-    while True:
+    for i in range(number_of_fruits):
         make_fruits()
-        if len(fruits) == 6:
-            break
 
 
 def start():
@@ -217,7 +215,7 @@ def start():
     add_SnakeServicer_to_server(Snake(), server)
     server.add_insecure_port("localhost:9999")
     server.start()
-    threading.Thread(target=make_fruits_startup()).start()
+    threading.Thread(target=make_fruits_startup, args=(6,)).start()
     try:
         while running:
             print("server on: threads {}".format(threading.activeCount()))

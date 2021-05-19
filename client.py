@@ -43,10 +43,8 @@ GRAY = (38, 38, 38)
 # Snake attributes
 snake_name = ""
 velX, velY = 1, 0
-randX = random.randint(2, WIDTH - 10)
-randY = random.randint(2, HEIGHT - 4)
 snake_body = []
-posX, posY = None, None
+posX, posY = -1, -1
 game_over = False
 
 player = Player()
@@ -324,7 +322,6 @@ def main():
     global posX
     global posY
 
-
     clock = pygame.time.Clock()
     player.name = snake_name  # Set player name to input name
     get_player_info()  # Updates player info
@@ -396,7 +393,7 @@ def bot_main():
     get_player_info()
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
-    
+
     # Gets empty tiles from server
     for pos in player_request.position:
         snake_body.append((pos.x, pos.y))
