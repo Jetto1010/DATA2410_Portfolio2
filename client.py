@@ -323,8 +323,9 @@ def main():
     global posX
     global posY
 
-    player.name = snake_name  # Set player name to input name
+
     clock = pygame.time.Clock()
+    player.name = snake_name  # Set player name to input name
     get_player_info()  # Updates player info
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
@@ -332,6 +333,7 @@ def main():
     for pos in player_request.position:
         snake_body.append((pos.x, pos.y))
     posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
+
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -392,9 +394,11 @@ def bot_main():
         "dimensions": (WIDTH, HEIGHT)
     }
 
+    player.name = snake_name  # Set player name to input name
     get_player_info()
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
+    
     # Gets empty tiles from server
     for pos in player_request.position:
         snake_body.append((pos.x, pos.y))
