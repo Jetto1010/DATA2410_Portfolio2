@@ -7,7 +7,6 @@ import tkinter as tk
 import pygame
 import random
 import sys
-from itertools import permutations 
 
 pygame.display.set_caption("PySnake")
 channel = grpc.insecure_channel("localhost:9999")
@@ -23,8 +22,6 @@ WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 
 screen = pygame.Surface((WIDTH, HEIGHT))
 
-
-# Colors
 
 # Prevents generating a color that blends in with the background
 def rand_light_color():
@@ -114,10 +111,8 @@ def hit_event():
     global fruits
     global snakes
     global game_over
-    global velX
-    global velY
-    global posX
-    global posY
+    global velX, velY
+    global posX, posY
 
     # Boolean statements for game_over if test below
     hit_self = snake_body[len(snake_body) - 1] in snake_body[:-1]
@@ -260,7 +255,6 @@ def show_menu():
         global bot
 
         bot = ib.get()
-
         snake_name = name_input.get()
         window.destroy()
 
@@ -319,19 +313,9 @@ def show_score():
 
 def main():
     global run
-    global posX
-    global posY
+    global posX, posY
 
     clock = pygame.time.Clock()
-    player.name = snake_name  # Set player name to input name
-    get_player_info()  # Updates player info
-    player_request = service.send_player(player)  # Sends server info about a new player
-    player.name = player_request.name  # If name is not unique, player will get new one
-    # Gets empty tiles from server
-    for pos in player_request.position:
-        snake_body.append((pos.x, pos.y))
-    posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
-
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -339,13 +323,6 @@ def main():
                 run = False
 
         draw()
-
-    pygame.quit()
-    high_score = High_score()
-    high_score.name = snake_name
-    high_score.score = len(snake_body) - 4
-    service.send_high_score(high_score)
-    show_score()
 
 
 def move_bot_snake(path):
@@ -389,15 +366,6 @@ def bot_main():
         "dimensions": (WIDTH, HEIGHT)
     }
 
-    player.name = snake_name  # Set player name to input name
-    get_player_info()
-    player_request = service.send_player(player)  # Sends server info about a new player
-    player.name = player_request.name  # If name is not unique, player will get new one
-
-    # Gets empty tiles from server
-    for pos in player_request.position:
-        snake_body.append((pos.x, pos.y))
-    posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
     get_server_info()
     fruit = fruits[0]
     path = find_path(fruit, client_info)
@@ -424,15 +392,32 @@ def bot_main():
 
         draw(path)
 
+
+def start_snake():
+    global posX, posY
+
+    player.name = snake_name  # Set player name to input name
+    get_player_info()  # Updates player info
+    player_request = service.send_player(player)  # Sends server info about a new player
+    player.name = player_request.name  # If name is not unique, player will get new one
+    # Gets empty tiles from server
+    for pos in player_request.position:
+        snake_body.append((pos.x, pos.y))
+    posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
+
+    if bot == 1:
+        bot_main()
+    else:
+        main()
+
     pygame.quit()
+    high_score = High_score()
+    high_score.name = snake_name
+    high_score.score = len(snake_body) - 4
+    service.send_high_score(high_score)
     show_score()
 
 
 if __name__ == "__main__":
     show_menu()
-
-    print(bot)
-    if bot == 1:
-        bot_main()
-    else:
-        main()
+    start_snake()

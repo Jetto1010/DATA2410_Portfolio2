@@ -179,13 +179,13 @@ def make_fruits():
     print("Hello making new fruit at {}".format(threading.currentThread()))
     time.sleep(random.random() + random.randint(1, 3))
     pos = Position()
-    pos.x = random.randint(0, width)
-    pos.y = random.randint(0, height)
+    pos.x = random.randint(1, width - 1)
+    pos.y = random.randint(1, height - 1)
 
     # Ensures that fruit never spawn twice on the same tile or tile with snake on it
     while not empty_tile(pos):
-        pos.x = random.randint(0, width)
-        pos.y = random.randint(0, height)
+        pos.x = random.randint(1, width - 1)
+        pos.y = random.randint(1, height - 1)
 
     fruits.append(pos)
     print("Made fruit at {}".format(threading.currentThread()))
