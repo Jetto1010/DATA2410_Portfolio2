@@ -7,6 +7,7 @@ import tkinter as tk
 import pygame
 import random
 import sys
+from itertools import permutations 
 
 pygame.display.set_caption("PySnake")
 channel = grpc.insecure_channel("localhost:9999")
@@ -358,12 +359,9 @@ def move_bot_snake(path):
     try:
         velX = path[1][0] - posX
         velY = path[1][1] - posY
-
         path.pop(0)
     except IndexError:
         pass
-
-    print("VELOCITY: {}, {}".format(velX, velY))
     
     posX += velX
     posY += velY
