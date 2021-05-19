@@ -7,12 +7,12 @@ service = SnakeStub(channel)
 
 
 def run():
-    print(service.send_high_score(send_high_score()).confirmation)
+    # print(service.send_high_score(send_high_score()).confirmation)
     # print(service.send_fruit(send_fruit()).confirmation)
     # print(get_leaderboard())
     # print(get_size())
     # print(get_information())
-    # print(service.send_player(make_player()).confirmation)
+    print(service.send_player(make_player()))
     channel.close()
 
 
@@ -22,13 +22,13 @@ def make_player():
     player.name = "Test2"
     player.color.extend([1, 2, 3])
     player.game_over = False
-    positions = []
-    for i in range(5):
-        pos = Position()
-        pos.x = 3*4 + i
-        pos.y = 24
-        positions.append(pos)
-    player.position.extend(positions)
+    # positions = []
+    # for i in range(5):
+    #     pos = Position()
+    #     pos.x = 3*4 + i
+    #     pos.y = 24
+    #     positions.append(pos)
+    # player.position.extend(positions)
     return player
 
 
