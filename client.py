@@ -15,7 +15,7 @@ size = service.get_size(No_parameter())
 WIDTH = size.x
 HEIGHT = size.y
 WIN_SCALE = 20
-FPS = 15
+FPS = 10
 run = True
 bot = 0
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
@@ -396,7 +396,10 @@ def bot_main():
 def start_snake():
     global posX, posY
 
-    player.name = snake_name  # Set player name to input name
+    if snake_name != "":
+        player.name = snake_name  # Set player name to input name
+    else:
+        player.name = "Guest"
     get_player_info()  # Updates player info
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one

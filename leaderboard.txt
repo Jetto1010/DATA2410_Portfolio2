@@ -1,5 +1,5 @@
-Test_high,7
-,8
-send high score,23
+d,10
 xvc,12
+dsdf,11
+fyh,16
 werwr ,26

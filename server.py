@@ -5,6 +5,7 @@ import grpc
 import time
 import threading
 import random
+import re
 
 width = 64
 height = 36
@@ -26,7 +27,6 @@ class Snake(SnakeServicer):
         new_score = False
         score = request.score
 
-        # Logic behind leaderboard update
         if len(leaderboard) == 0:  # Empty leaderboard
             leaderboard.append(high_score)
             new_score = True
@@ -36,13 +36,12 @@ class Snake(SnakeServicer):
                     if len(leaderboard) == 5:  # Will remove smallest value if leaderboard is full
                         leaderboard.pop(0)
                     # Adds high score to right spot in leaderboard
-                    leaderboard = leaderboard[0:i + 1] + [high_score] + leaderboard[i + 1:]
+                    leaderboard.insert(i, high_score)
                     new_score = True
                     break
                 elif i == 0 and len(leaderboard) < 5:  # Checks if leaderboard is not full
-                    leaderboard = leaderboard[0:i] + [high_score] + leaderboard[i:]
+                    leaderboard.insert(i, high_score)
                     new_score = True
-                    break
 
         # If new high score, updates leaderboard and writes it to file
         if new_score:
@@ -69,7 +68,9 @@ class Snake(SnakeServicer):
         same_name = 1
         for i in range(len(players)):  # Checks if name is same as other players
             if name == players[i].name:
-                name += "({})".format(same_name)  # Will add number to the end of name to make it unique
+                temp_name = re.sub("[(][0-9]+[)]", "", name)
+                temp_name += "({})".format(same_name)  # Will add number to the end of name to make it unique
+                name = temp_name
                 same_name += 1
 
         player = Player()
@@ -176,7 +177,6 @@ def empty_tile(pos):
 def make_fruits():
     global fruits
     # Generates fruits over time
-    print("Hello making new fruit at {}".format(threading.currentThread()))
     time.sleep(random.random() + random.randint(1, 3))
     pos = Position()
     pos.x = random.randint(1, width - 1)
@@ -188,7 +188,6 @@ def make_fruits():
         pos.y = random.randint(1, height - 1)
 
     fruits.append(pos)
-    print("Made fruit at {}".format(threading.currentThread()))
 
 
 def make_fruits_startup(number_of_fruits):
