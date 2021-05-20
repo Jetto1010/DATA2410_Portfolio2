@@ -65,14 +65,18 @@ class Snake(SnakeServicer):
     # Gets information about new player
     def send_player(self, request, context):
         global players
-        name = request.name
-        same_name = 1
-        for i in range(len(players)):  # Checks if name is same as other players
-            if name == players[i].name:
-                temp_name = re.sub("[(][0-9]+[)]", "", name)
-                temp_name += "({})".format(same_name)  # Will add number to the end of name to make it unique
-                name = temp_name
-                same_name += 1
+        # If new player, not player that wants to play again
+        if not request.game_over:
+            name = request.name
+            same_name = 1
+            for i in range(len(players)):  # Checks if name is same as other players
+                if name == players[i].name:
+                    temp_name = re.sub("[(][0-9]+[)]", "", name)
+                    temp_name += "({})".format(same_name)  # Will add number to the end of name to make it unique
+                    name = temp_name
+                    same_name += 1
+        else:
+            name = request.name
 
         player = Player()
         player.name = name

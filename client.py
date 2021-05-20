@@ -394,15 +394,24 @@ def bot_main():
 
 def start_snake():
     global posX, posY
+    global game_over
 
-    if snake_name != "":
-        player.name = snake_name  # Set player name to input name
+    # If game_over is false, it is the first time the player started this session
+    # If game_over is true, it is not the first time
+    if not game_over:
+        if snake_name != "":
+            player.name = snake_name  # Set player name to input name
+        else:
+            player.name = "Guest"
+        player.color.extend(rand_light_color())
+        player.game_over = False
+        player_request = service.send_player(player)  # Sends server info about a new player
+        player.name = player_request.name  # If name is not unique, player will get new one
     else:
-        player.name = "Guest"
-    player.color.extend(rand_light_color())
-    get_player_info()  # Updates player info
-    player_request = service.send_player(player)  # Sends server info about a new player
-    player.name = player_request.name  # If name is not unique, player will get new one
+        # This way player keeps same name and color
+        player_request = service.send_player(player)  # Sends server info that player wants to play again
+        player.game_over = game_over = False  # Sets game_over to false for player
+
     # Gets empty tiles from server
     for pos in player_request.position:
         snake_body.append((pos.x, pos.y))
@@ -427,17 +436,21 @@ def start_again():
     global velX, velY
     global snake_body
     global posX, posY
-    global game_over
     global player
+    global run
+    global snakes
+    global fruits
 
+    pygame.init()
     pygame.display.set_caption("PySnake")
     WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
     screen = pygame.Surface((WIDTH, HEIGHT))
     velX, velY = 1, 0
     snake_body = []
     posX, posY = -1, -1
-    game_over = False
-    player = Player()
+    run = True
+    snakes = []
+    fruits = []
     start_snake()
 
 
