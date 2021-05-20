@@ -62,6 +62,7 @@ class Snake(SnakeServicer):
         threading.Thread(target=make_fruits).start()
         return Confirmed(confirmation=True)
 
+    # Gets information about new player
     def send_player(self, request, context):
         global players
         name = request.name

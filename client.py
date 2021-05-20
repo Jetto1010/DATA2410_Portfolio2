@@ -8,32 +8,18 @@ import pygame
 import random
 import sys
 
-pygame.display.set_caption("PySnake")
 channel = grpc.insecure_channel("localhost:9999")
 service = SnakeStub(channel)
 size = service.get_size(No_parameter())
-WIDTH = size.x
-HEIGHT = size.y
+WIDTH, HEIGHT = size.x, size.y
 WIN_SCALE = 20
+pygame.display.set_caption("PySnake")
+WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
+screen = pygame.Surface((WIDTH, HEIGHT))
 FPS = 10
 run = True
 bot = 0
-WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 
-screen = pygame.Surface((WIDTH, HEIGHT))
-
-
-# Prevents generating a color that blends in with the background
-def rand_light_color():
-    r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
-
-    while r < 100 and g < 100 and b < 100:
-        r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
-
-    return r, g, b
-
-
-SNAKE_COLOR = rand_light_color()
 BLACK = (26, 26, 26)
 GRAY = (38, 38, 38)
 
@@ -44,12 +30,20 @@ snake_body = []
 posX, posY = -1, -1
 game_over = False
 
-player = Player()
-player.color.extend(rand_light_color())
-
 # Assets
+player = Player()
 fruits = []
 snakes = []
+
+
+# Prevents generating a color that blends in with the background
+def rand_light_color():
+    r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+
+    while r < 100 and g < 100 and b < 100:
+        r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+
+    return r, g, b
 
 
 def draw_other_snakes():
@@ -126,14 +120,12 @@ def hit_event():
             print("HIT SNAKES")
             hit_snakes = True
 
-    # Ved å treffe seg selv, ecller andre slanger skal spillet være over, men fortsatt være i bildet. Ved å treffe
-    # kanten skal spillet være over, men slangen skal fortsatt være i bildet, siden andre spillere skal ikke kunne
-    # tråkke over kroppen
+    # By hitting itself, other snakes or the wall the game will be over.
     if hit_self or hit_border or hit_snakes:
         print("HIT SELF OR BORDER")
         game_over = True
 
-    # Ved plukke opp frukt, push ny pos, ikke pop bakerste. Så fjern fruiten fra fruit arrayet
+    # At fruit pick up, push new pos, don't remove last. Then removes the fruit from array and sends info to server
     elif snake_body[len(snake_body) - 1] in fruits:
         fruit = Position()
         fruit.x = posX - velX
@@ -143,7 +135,7 @@ def hit_event():
             snake_body.append((posX, posY))
 
     else:
-        # Ved bevegelse push ny pos i snake body, pop bakerste
+        # On movement push new pos into snake body, remove last
         snake_body.pop(0)
         snake_body.append((posX, posY))
 
@@ -308,21 +300,14 @@ def show_score():
     score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
 
+    def play_again():
+        window.destroy()
+        start_again()
+
+    play_again_button = Button(text="Play again", command=play_again, font=font, pady=5)
+    play_again_button.pack()
+
     window.mainloop()
-
-
-def main():
-    global run
-    global posX, posY
-
-    clock = pygame.time.Clock()
-    while run:
-        clock.tick(FPS)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        draw()
 
 
 def move_bot_snake(path):
@@ -344,6 +329,20 @@ def move_bot_snake(path):
 def draw_path(path):
     for p in path:
         screen.set_at(p, (255, 215, 0))
+
+
+def main():
+    global run
+    global posX, posY
+
+    clock = pygame.time.Clock()
+    while run:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        draw()
 
 
 def bot_main():
@@ -400,6 +399,7 @@ def start_snake():
         player.name = snake_name  # Set player name to input name
     else:
         player.name = "Guest"
+    player.color.extend(rand_light_color())
     get_player_info()  # Updates player info
     player_request = service.send_player(player)  # Sends server info about a new player
     player.name = player_request.name  # If name is not unique, player will get new one
@@ -419,6 +419,26 @@ def start_snake():
     high_score.score = len(snake_body) - 4
     service.send_high_score(high_score)
     show_score()
+
+
+def start_again():
+    global WIN
+    global screen
+    global velX, velY
+    global snake_body
+    global posX, posY
+    global game_over
+    global player
+
+    pygame.display.set_caption("PySnake")
+    WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
+    screen = pygame.Surface((WIDTH, HEIGHT))
+    velX, velY = 1, 0
+    snake_body = []
+    posX, posY = -1, -1
+    game_over = False
+    player = Player()
+    start_snake()
 
 
 if __name__ == "__main__":
