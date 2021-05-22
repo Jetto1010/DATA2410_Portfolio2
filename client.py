@@ -35,13 +35,13 @@ try:
     size = service.get_size(No_parameter())
 except:
     show_prompt("Error:\nCould not connect to server")
-    
+
 WIDTH, HEIGHT = size.x, size.y
 WIN_SCALE = 20
 pygame.display.set_caption("PySnake")
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
 screen = pygame.Surface((WIDTH, HEIGHT))
-FPS = 10
+FPS = 12
 run = True
 bot = 0
 
@@ -156,7 +156,6 @@ def hit_event():
 
     # By hitting itself, other snakes or the wall the game will be over.
     if hit_self or hit_border or hit_snakes:
-        print("HIT SELF OR BORDER")
         game_over = True
 
     # At fruit pick up, push new pos, don't remove last. Then removes the fruit from array and sends info to server
@@ -358,7 +357,7 @@ def show_score():
     score_label.pack()
 
     def play_again():
-        window.destroy()
+        score_win.destroy()
         start_again()
 
     play_again_button = Button(score_win, text="Play again", command=play_again, font=font, pady=5)
