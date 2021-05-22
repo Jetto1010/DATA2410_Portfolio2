@@ -8,9 +8,34 @@ import pygame
 import random
 import sys
 
+# Displays an error message to the user
+def show_prompt(msg):
+    prompt_win = tk.Tk()
+    prompt_win.title("Prompt")
+    prompt_win.configure(bg="#2d2d2d")
+
+    # Fonts
+    font = Font(family="Helvetica", size=14)
+
+    # Message
+    error_message = Label(prompt_win, text=msg, pady=30, padx=30, font=font, fg="white", bg="#2d2d2d")
+    error_message.pack()
+
+    start_game_button = Button(prompt_win, text="Ok", command=prompt_win.destroy, font=font, pady=5)
+    start_game_button.pack()
+
+    margin_label = Label(prompt_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label.pack()
+
+    prompt_win.mainloop()
+
 channel = grpc.insecure_channel("localhost:9999")
 service = SnakeStub(channel)
-size = service.get_size(No_parameter())
+try:
+    size = service.get_size(No_parameter())
+except:
+    show_prompt("Error:\nCould not connect to server")
+    
 WIDTH, HEIGHT = size.x, size.y
 WIN_SCALE = 20
 pygame.display.set_caption("PySnake")
@@ -209,27 +234,6 @@ def draw(path=None):
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
-
-# Displays an error message to the user
-def show_prompt(msg):
-    prompt_win = tk.Tk()
-    prompt_win.title("Prompt")
-    prompt_win.configure(bg="#2d2d2d")
-
-    # Fonts
-    font = Font(family="Helvetica", size=14)
-
-    # Message
-    error_message = Label(prompt_win, text=msg, pady=30, padx=30, font=font, fg="white", bg="#2d2d2d")
-    error_message.pack()
-
-    start_game_button = Button(prompt_win, text="Ok", command=prompt_win.destroy, font=font, pady=5)
-    start_game_button.pack()
-
-    margin_label = Label(prompt_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
-    margin_label.pack()
-
-    prompt_win.mainloop()
 
 # Displays a menu with high scores and a start game button
 def show_menu():
