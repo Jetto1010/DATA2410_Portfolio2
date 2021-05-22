@@ -369,6 +369,36 @@ def show_score():
     score_win.mainloop()
 
 
+def show_players():
+    player_window = tk.Tk()
+    player_window.title("PySnake")
+    player_window.resizable(0, 0)
+    player_window.configure(bg="#2d2d2d")
+
+    # Fonts
+    font = Font(family="Helvetica", size=12)
+    title_font = Font(family="Helvetica", size=24)
+
+    # Title:
+    title_label = tk.Label(player_window, text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30,
+                           pady=20)
+    title_label.pack()
+
+    # Player score
+    player_score_text = "Current score: {}".format(len(snake_body) - 4)
+    player_score_label = tk.Label(title_label, text=player_score_text, font=font, pady=10, fg="white", bg="#2d2d2d")
+    player_score_label.pack()
+
+    # Current player and scores
+    current_players_text = "Players: \n"
+    for snake in snakes:
+        current_players_text += "{}: {}\n".format(snake["name"], len(snake["position"]) - 4)
+
+    current_players_label = tk.Label(title_label, text=current_players_text, font=font, padx=60, pady=5, fg="white",
+                                     bg="#2d2d2d")
+    current_players_label.pack()
+
+
 def move_bot_snake(path):
     global velX, velY, posX, posY
 
