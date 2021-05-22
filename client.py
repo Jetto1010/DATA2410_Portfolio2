@@ -210,6 +210,26 @@ def draw(path=None):
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
 
+# Displays an error message to the user
+def show_error(msg):
+    err_win = tk.Tk()
+    err_win.title("Error")
+    err_win.configure(bg="#2d2d2d")
+
+    # Fonts
+    font = Font(family="Helvetica", size=14)
+
+    # Message
+    error_message = Label(err_win, text=msg, pady=30, padx=30, font=font, fg="red", bg="#2d2d2d")
+    error_message.pack()
+
+    start_game_button = Button(err_win, text="Ok", command=err_win.destroy, font=font, pady=5)
+    start_game_button.pack()
+
+    margin_label = Label(err_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label.pack()
+
+    err_win.mainloop()
 
 # Displays a menu with high scores and a start game button
 def show_menu():
@@ -226,24 +246,24 @@ def show_menu():
     title_font = Font(family="Helvetica", size=24)
 
     # Title:
-    title_label = tk.Label(text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30, pady=20)
+    title_label = tk.Label(window, text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30, pady=20)
     title_label.pack()
 
     # Name field:
-    name_label = Label(text="Name: ", font=font, fg="white", bg="#2d2d2d", )
+    name_label = Label(window, text="Name: ", font=font, fg="white", bg="#2d2d2d", )
     name_label.pack()
 
-    name_input = Entry(font=font)
+    name_input = Entry(window, font=font)
     name_input.pack()
 
-    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label = Label(window, text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
     ib = IntVar()
-    bot_checkbox = Checkbutton(text="Run as bot", variable=ib, font=font, indicatoron=True)
+    bot_checkbox = Checkbutton(window, text="Run as bot", variable=ib, font=font, indicatoron=True)
     bot_checkbox.pack()
 
-    margin_label = Label(text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label = Label(window, text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
     # Start game button:
@@ -255,7 +275,7 @@ def show_menu():
         snake_name = name_input.get()
         window.destroy()
 
-    start_game_button = Button(text="Start game", command=start, font=font, pady=5)
+    start_game_button = Button(window, text="Start game", command=start, font=font, pady=5)
     start_game_button.pack()
 
     # High scores:
@@ -264,12 +284,12 @@ def show_menu():
     for i in reversed(range(len(leaderboard.high_score))):
         score_text += "{}: {}\n".format(leaderboard.high_score[i].name, leaderboard.high_score[i].score)
 
-    score_label = tk.Label(text=score_text, font=font, fg="white", bg="#2d2d2d", padx=60, pady=15)
+    score_label = tk.Label(window, text=score_text, font=font, fg="white", bg="#2d2d2d", padx=60, pady=15)
     score_label.pack()
 
     # Made by text:
     made_text = "Made by:\n Nikola Dordevic, s341839\n Jørund Topp Løvlien, s341822"
-    made_label = tk.Label(text=made_text, padx=60, pady=10, fg="white", bg="#2d2d2d", )
+    made_label = tk.Label(window, text=made_text, padx=60, pady=10, fg="white", bg="#2d2d2d", )
     made_label.pack()
 
     window.mainloop()
@@ -279,21 +299,21 @@ def show_menu():
 def show_score():
     global snakes
 
-    window = tk.Tk()
-    window.title("PySnake")
-    window.resizable(0, 0)
-    window.configure(bg="#2d2d2d")
+    score_win = tk.Tk()
+    score_win.title("PySnake")
+    score_win.resizable(0, 0)
+    score_win.configure(bg="#2d2d2d")
 
     font = Font(family="Helvetica", size=12)
     title_font = Font(family="Helvetica", size=24)
 
     # Title:
-    title_label = tk.Label(text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30, pady=20)
+    title_label = tk.Label(score_win, text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30, pady=20)
     title_label.pack()
 
     # Session score:
     session_text = "Session score: {}".format(len(snake_body) - 4)
-    session_label = tk.Label(text=session_text, font=font, padx=30, pady=10, fg="white", bg="#2d2d2d")
+    session_label = tk.Label(score_win, text=session_text, font=font, padx=30, pady=10, fg="white", bg="#2d2d2d")
     session_label.pack()
 
     # High scores:
@@ -302,17 +322,17 @@ def show_score():
     for i in reversed(range(len(leaderboard.high_score))):
         score_text += "{}: {}\n".format(leaderboard.high_score[i].name, leaderboard.high_score[i].score)
 
-    score_label = tk.Label(text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
+    score_label = tk.Label(score_win, text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
 
     def play_again():
         window.destroy()
         start_again()
 
-    play_again_button = Button(text="Play again", command=play_again, font=font, pady=5)
+    play_again_button = Button(score_win, text="Play again", command=play_again, font=font, pady=5)
     play_again_button.pack()
 
-    window.mainloop()
+    score_win.mainloop()
 
 
 def move_bot_snake(path):
