@@ -278,6 +278,34 @@ def show_menu():
     start_game_button = Button(window, text="Start game", command=start, font=font, pady=5)
     start_game_button.pack()
 
+    margin_label = Label(window, text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label.pack()
+
+    # How to play:
+    def howto():
+        msg ="""
+            Collect "fruit" or red pixels to achieve a greater score.
+            Avoid dying by evading other players, yourself and the border.
+            The snake can not move backwards
+            The game is over once everybody has gotten a game over
+
+            Controls:
+            There are two sets of controls that do the same thing
+
+            W or Arrow Up: Move the snake upwards
+
+            A or Arrow Left: Move the snake to the left
+
+            S or Arrow Down: Move the snake downwards
+
+            D or Arrow Right: Move the snake to the right
+        """
+
+        show_prompt(msg)
+
+    howto_button = Button(window, text="How to play", command=howto, font=font, pady=3)
+    howto_button.pack()
+
     # High scores:
     score_text = "High scores: \n"
     leaderboard = service.get_leaderboard(No_parameter())
@@ -331,6 +359,9 @@ def show_score():
 
     play_again_button = Button(score_win, text="Play again", command=play_again, font=font, pady=5)
     play_again_button.pack()
+
+    margin_label = Label(score_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label.pack()
 
     score_win.mainloop()
 
