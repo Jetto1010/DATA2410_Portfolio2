@@ -66,7 +66,10 @@ class Snake(SnakeServicer):
     def send_player(self, request, context):
         global players
         # If new player, not player that wants to play again
+        player = Player()
+        player.color.extend(request.color)
         if not request.game_over:
+            game_over = request.game_over
             name = request.name
             same_name = 1
             for i in range(len(players)):  # Checks if name is same as other players
@@ -77,11 +80,10 @@ class Snake(SnakeServicer):
                     same_name += 1
         else:
             name = request.name
+            game_over = False
 
-        player = Player()
         player.name = name
-        player.color.extend(request.color)
-        player.game_over = request.game_over
+        player.game_over = game_over
         # Creates empty array for snake position
         positions = [None] * 4
         all_tiles_empty = False
@@ -201,6 +203,29 @@ def make_fruits_startup(number_of_fruits):
         make_fruits()
 
 
+def remove_dead():
+    global players
+
+    while running:
+        # Will remove dead players from array
+        for player in players:
+            if player.game_over:
+                players.remove(player)
+        # Saves a temporary player array to see if player has disconnected without dying
+        # (If game freezes this will also count as dying)
+        temp_players = players.copy()
+        time.sleep(0.5)
+        # Checks player positioning after half a second
+        if len(temp_players) != 0:
+            for p in players:
+                for t_p in temp_players:
+                    if p.name == t_p.name:  # Makes is so it dose not loop unnecessary
+                        if p.position == t_p.position:
+                            p.game_over = True
+                        temp_players.remove(t_p)
+                        continue
+
+
 def start():
     global running
     # Reads inn leaderboard file and parses it to a High_score message
@@ -220,9 +245,9 @@ def start():
     server.add_insecure_port("localhost:9999")
     server.start()
     threading.Thread(target=make_fruits_startup, args=(6,)).start()
+    threading.Thread(target=remove_dead).start()
     try:
         while running:
-            print("server on: threads {}".format(threading.activeCount()))
             time.sleep(5)
     except KeyboardInterrupt:
         print("KeyBoardInterrupt")

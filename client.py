@@ -46,10 +46,16 @@ def rand_light_color():
     return r, g, b
 
 
-def draw_other_snakes():
+def draw_snakes():
     for snake in snakes:
         for pos in snake["position"]:
             screen.set_at(pos, snake["color"])
+
+
+# Draws the fruit coordinates from the server
+def draw_fruit():
+    for pos in fruits:
+        screen.set_at(pos, "red")
 
 
 # Updates information about player
@@ -69,15 +75,22 @@ def get_player_info():
 def get_server_info():
     global fruits
     global snakes
+    global game_over
 
     fruits = []
     snakes = []
+    stopped = True
     get_player_info()
+    # Gets info from server and parses it
     request = service.get_information(player)
     for r in request:
+        # Checks if fruit exist
         if r.fruit.x != -1:
             fruits.append((r.fruit.x, r.fruit.y))
+        # Checks if player exist
         if r.player.game_over is False:
+            if r.player.name == player.name:
+                stopped = False
             positions = []
             for pos in r.player.position:
                 positions.append((pos.x, pos.y))
@@ -93,11 +106,8 @@ def get_server_info():
             }
             snakes.append(snake)
 
-
-# Draws the fruit coordinates from the server
-def draw_fruit():
-    for pos in fruits:
-        screen.set_at(pos, "red")
+    if stopped:
+        game_over = True
 
 
 # Checks if player triggers a hit event
@@ -117,7 +127,6 @@ def hit_event():
     # Checks if snake is in another snake but not in its own snake
     for snake in snakes:
         if snake_body[len(snake_body) - 1] in snake["position"] and snake_name != snake["name"]:
-            print("HIT SNAKES")
             hit_snakes = True
 
     # By hitting itself, other snakes or the wall the game will be over.
@@ -171,9 +180,6 @@ def move_snake():
 def draw(path=None):
     if path is None:
         path = []
-
-    global game_over
-
     # Drawing background
     screen.fill(BLACK)
 
@@ -187,7 +193,6 @@ def draw(path=None):
                 screen.set_at((x, y), GRAY)
 
     # Gets info from server before drawing assets
-
     get_server_info()
     # Drawing assets
     draw_fruit()
@@ -198,7 +203,7 @@ def draw(path=None):
 
     if bot:
         draw_path(path)
-    draw_other_snakes()
+    draw_snakes()
     if bot:
         draw_path(path)
 
@@ -321,7 +326,7 @@ def move_bot_snake(path):
         path.pop(0)
     except IndexError:
         pass
-    
+
     posX += velX
     posY += velY
 
@@ -395,6 +400,7 @@ def bot_main():
 def start_snake():
     global posX, posY
     global game_over
+    global snake_name
 
     # If game_over is false, it is the first time the player started this session
     # If game_over is true, it is not the first time
@@ -402,7 +408,7 @@ def start_snake():
         if snake_name != "":
             player.name = snake_name  # Set player name to input name
         else:
-            player.name = "Guest"
+            player.name = snake_name = "Guest"
         player.color.extend(rand_light_color())
         player.game_over = False
         player_request = service.send_player(player)  # Sends server info about a new player
