@@ -8,6 +8,7 @@ import pygame
 import random
 import sys
 
+
 # Displays an error message to the user
 def show_prompt(msg):
     prompt_win = tk.Tk()
@@ -29,12 +30,14 @@ def show_prompt(msg):
 
     prompt_win.mainloop()
 
-channel = grpc.insecure_channel("localhost:9999")
-service = SnakeStub(channel)
+
 try:
+    channel = grpc.insecure_channel("localhost:9999")
+    service = SnakeStub(channel)
     size = service.get_size(No_parameter())
-except:
+except grpc.RpcError:
     show_prompt("Error:\nCould not connect to server")
+    sys.exit()
 
 WIDTH, HEIGHT = size.x, size.y
 WIN_SCALE = 20
@@ -225,14 +228,11 @@ def draw(path=None):
     elif not game_over:
         move_snake()
 
-    if bot:
-        draw_path(path)
     draw_snakes()
-    if bot:
-        draw_path(path)
 
     WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
+
 
 # Displays a menu with high scores and a start game button
 def show_menu():
@@ -286,7 +286,7 @@ def show_menu():
 
     # How to play:
     def howto():
-        msg ="""
+        msg = """
             Collect "fruit" or red pixels to achieve a greater score.
             Avoid dying by evading other players, yourself and the border.
             The snake can not move backwards
@@ -383,11 +383,6 @@ def move_bot_snake(path):
 
     posX += velX
     posY += velY
-
-
-def draw_path(path):
-    for p in path:
-        screen.set_at(p, (255, 215, 0))
 
 
 def main():
