@@ -211,25 +211,25 @@ def draw(path=None):
     pygame.display.update()
 
 # Displays an error message to the user
-def show_error(msg):
-    err_win = tk.Tk()
-    err_win.title("Error")
-    err_win.configure(bg="#2d2d2d")
+def show_prompt(msg):
+    prompt_win = tk.Tk()
+    prompt_win.title("Prompt")
+    prompt_win.configure(bg="#2d2d2d")
 
     # Fonts
     font = Font(family="Helvetica", size=14)
 
     # Message
-    error_message = Label(err_win, text=msg, pady=30, padx=30, font=font, fg="red", bg="#2d2d2d")
+    error_message = Label(prompt_win, text=msg, pady=30, padx=30, font=font, fg="white", bg="#2d2d2d")
     error_message.pack()
 
-    start_game_button = Button(err_win, text="Ok", command=err_win.destroy, font=font, pady=5)
+    start_game_button = Button(prompt_win, text="Ok", command=prompt_win.destroy, font=font, pady=5)
     start_game_button.pack()
 
-    margin_label = Label(err_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
+    margin_label = Label(prompt_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
-    err_win.mainloop()
+    prompt_win.mainloop()
 
 # Displays a menu with high scores and a start game button
 def show_menu():
