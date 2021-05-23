@@ -72,7 +72,7 @@ def distance(p1, p2):
 
 
 # Find the fruit closest to the snake
-def closest_fruit(fruit, c):
+def closest_fruit(c):
     fruits = c["fruits"]
     pos = c["snake_body"][-1]
 
@@ -146,12 +146,3 @@ def find_path(fruit, c):
     path.reverse()
     return path
 
-
-# Final bot_main() will look like
-"""
-draw()
-find closest fruit
-find path to closest fruit
-before moving check if path has changed
-move to closest fruit
-"""

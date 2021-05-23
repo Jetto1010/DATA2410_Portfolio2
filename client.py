@@ -10,7 +10,7 @@ import sys
 
 
 # Displays an error message to the user
-def show_prompt(msg):
+def show_prompt(msg, btnText="Ok"):
     prompt_win = tk.Tk()
     prompt_win.title("Prompt")
     prompt_win.configure(bg="#2d2d2d")
@@ -22,7 +22,7 @@ def show_prompt(msg):
     error_message = Label(prompt_win, text=msg, pady=30, padx=30, font=font, fg="white", bg="#2d2d2d")
     error_message.pack()
 
-    start_game_button = Button(prompt_win, text="Ok", command=prompt_win.destroy, font=font, pady=5)
+    start_game_button = Button(prompt_win, text=btnText, command=prompt_win.destroy, font=font, pady=5)
     start_game_button.pack()
 
     margin_label = Label(prompt_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
@@ -53,6 +53,8 @@ font_score_2.set_underline(True)
 font_score_3 = pygame.font.SysFont("Helvetica", 20)
 BLACK = (26, 26, 26)
 GRAY = (38, 38, 38)
+
+gameover_prompt = False
 
 # Snake attributes
 snake_name = ""
@@ -425,6 +427,7 @@ def move_bot_snake(path):
 def main():
     global run
     global posX, posY
+    global gameover_prompt
 
     clock = pygame.time.Clock()
     while run:
@@ -432,6 +435,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+        if game_over and not gameover_prompt:
+            gameover_prompt = True
+            show_prompt("GAME OVER", "Spectate")
 
         draw()
 
@@ -445,6 +452,7 @@ def bot_main():
     global WIDTH, HEIGHT
 
     clock = pygame.time.Clock()
+    get_server_info()
 
     # Starting conditions
     client_info = {
@@ -456,8 +464,7 @@ def bot_main():
         "dimensions": (WIDTH, HEIGHT)
     }
 
-    get_server_info()
-    fruit = fruits[0]
+    fruit = closest_fruit(c)
     path = find_path(fruit, client_info)
 
     while run:
@@ -471,7 +478,7 @@ def bot_main():
             "dimensions": (WIDTH, HEIGHT)
         }
 
-        fruit = closest_fruit(fruit, client_info)
+        fruit = closest_fruit(client_info)
         if path[2:4] in snakes or len(path) == 1:  # LEN PATH JUST IMPLEMENTED UNTIL PATHING WITH NO RESULT FIXED
             path = find_path(fruit, client_info)
 
