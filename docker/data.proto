@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package DATA2410_Portfolio2;
+
+// Generate files
+// python -m grpc_tools.protoc -I./. --python_out=. --grpc_python_out=. ./data.proto
+
+service Snake {
+    // Send to server
+    rpc send_high_score(High_score) returns (Confirmed) {}
+    rpc send_fruit(Position) returns (Confirmed) {}
+    rpc send_player(Player) returns (Player) {}
+    // Get from server
+    rpc get_leaderboard(No_parameter) returns (Leaderboard) {}
+    rpc get_size(No_parameter) returns (Position) {}
+    rpc get_information(Player) returns (stream Information) {}
+}
+
+message No_parameter {}
+
+message Confirmed {
+  bool confirmation = 1;
+}
+
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message Player {
+  string name = 1;
+  repeated int32 color = 2;
+  bool game_over = 3;
+  repeated Position position = 4;
+}
+
+message High_score {
+  string name = 1;
+  int32 score = 2;
+}
+
+message Leaderboard {
+  repeated High_score high_score = 1;
+}
+
+message Information {
+  Player player = 1;
+  Position fruit = 2;
+}
