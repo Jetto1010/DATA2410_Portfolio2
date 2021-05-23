@@ -6,6 +6,7 @@ import time
 import threading
 import random
 import re
+import json
 
 width = 64
 height = 36
@@ -45,13 +46,17 @@ class Snake(SnakeServicer):
 
         # If new high score, updates leaderboard and writes it to file
         if new_score:
-            leaderboard_string = ""
+            leaderboard_array = []
             for leader in leaderboard:
-                leaderboard_string += format(leader.name) + ","
-                leaderboard_string += format(leader.score) + "\n"
+                leaderboard_player = {
+                    "name": leader.name,
+                    "score": leader.score
+                }
 
-            file = open("leaderboard.txt", "w")
-            file.write(leaderboard_string)
+                leaderboard_array.append(leaderboard_player)
+
+            with open('leaderboard.json', 'w') as f:
+                json.dump(leaderboard_array, f)
 
         return Confirmed(confirmation=True)
 
@@ -229,15 +234,16 @@ def remove_dead():
 def start():
     global running
     # Reads inn leaderboard file and parses it to a High_score message
-    file = open("leaderboard.txt", "r")
-    leaderboard_str = file.read().split("\n")
-    for i in leaderboard_str:
-        if i == "":
-            break
-        split = i.split(",")
+    with open('leaderboard.json') as f:
+        try:
+            leaderboard_array = json.load(f)
+        except json.JSONDecodeError:
+            leaderboard_array = []
+
+    for player in leaderboard_array:
         high_score = High_score()
-        high_score.name = split[0]
-        high_score.score = int(split[1])
+        high_score.name = player["name"]
+        high_score.score = player["score"]
         leaderboard.append(high_score)
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
