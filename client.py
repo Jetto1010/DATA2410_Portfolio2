@@ -35,7 +35,7 @@ try:
     channel = grpc.insecure_channel("localhost:9999")
     service = SnakeStub(channel)
     size = service.get_size(No_parameter())
-except grpc.RpcError:
+except (grpc.RpcError, RuntimeError):
     show_prompt("Error:\nCould not connect to server")
     sys.exit()
 
@@ -464,8 +464,7 @@ def bot_main():
         "dimensions": (WIDTH, HEIGHT)
     }
 
-    fruit = closest_fruit(c)
-    path = find_path(fruit, client_info)
+    path = find_path(closest_fruit(client_info), client_info)
 
     while run:
         clock.tick(FPS)
