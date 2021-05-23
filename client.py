@@ -39,14 +39,18 @@ except grpc.RpcError:
     show_prompt("Error:\nCould not connect to server")
     sys.exit()
 
+# Pygame attributes
 WIDTH, HEIGHT = size.x, size.y
 WIN_SCALE = 20
+pygame.init()
+pygame.font.init()
 pygame.display.set_caption("PySnake")
-WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-FPS = 12
-run = True
-bot = 0
-
+WIN = pygame.display.set_mode((WIDTH * WIN_SCALE + 150, HEIGHT * WIN_SCALE))
+font_score_1 = pygame.font.SysFont("Helvetica", 40)
+font_score_1.set_underline(True)
+font_score_2 = pygame.font.SysFont("Helvetica", 30)
+font_score_2.set_underline(True)
+font_score_3 = pygame.font.SysFont("Helvetica", 20)
 BLACK = (26, 26, 26)
 GRAY = (38, 38, 38)
 
@@ -56,6 +60,9 @@ velX, velY = 1, 0
 snake_body = []
 posX, posY = -1, -1
 game_over = False
+FPS = 12
+run = True
+bot = 0
 
 # Assets
 player = Player()
@@ -73,6 +80,21 @@ def rand_light_color():
     return r, g, b
 
 
+# Draws the background in a chess like pattern
+def draw_background():
+    WIN.fill(GRAY, (0, 0, WIDTH * WIN_SCALE, WIN.get_height()))
+
+    for x in range(WIDTH):
+        for y in range(HEIGHT):
+            offset = 0
+            if y % 2 == 0:
+                offset = 1
+
+            if (x + offset) % 2 == 0:
+                pygame.draw.rect(WIN, BLACK, (x * WIN_SCALE, y * WIN_SCALE, WIN_SCALE, WIN_SCALE))
+
+
+# Draws all the snakes
 def draw_snakes():
     for snake in snakes:
         for pos in snake["position"]:
@@ -83,6 +105,32 @@ def draw_snakes():
 def draw_fruit():
     for pos in fruits:
         pygame.draw.rect(WIN, (255, 0, 0), (pos[0] * WIN_SCALE, pos[1] * WIN_SCALE, WIN_SCALE, WIN_SCALE))
+
+
+# Draws the scores and player names
+def draw_score(score):  # Has parameter for score input so right score will show on start up
+    # Has to draw all the white to remove previous text
+    pygame.draw.rect(WIN, (235, 235, 235), (WIDTH * WIN_SCALE, 5, 145, HEIGHT * WIN_SCALE - 10))
+    text_surface = font_score_1.render("Scores:", False, (0, 0, 0))
+    WIN.blit(text_surface, (WIDTH * WIN_SCALE + 10, 10))
+
+    text_array = [  # Predetermined text
+        ("", font_score_3, 55),
+        ("Your score: {}".format(score), font_score_3, 30),
+        ("Players:", font_score_2, 42)
+    ]
+    for snake in snakes:
+        text_array.append(("{}: {}".format(snake["name"], len(snake["position"]) - 4), font_score_3, 20))
+
+    pixel_from_top = 0
+    # Draws all the text on the right hand side
+    for i in range(1, len(text_array)):
+        if text_array[i][1] == font_score_3:
+            text = font_score_3.render(text_array[i][0], False, BLACK)
+        else:
+            text = font_score_2.render(text_array[i][0], False, BLACK)
+        pixel_from_top += text_array[i - 1][2]
+        WIN.blit(text, (WIDTH * WIN_SCALE + 10, pixel_from_top))
 
 
 # Updates information about player
@@ -207,17 +255,7 @@ def draw(path=None):
     if path is None:
         path = []
     # Drawing background
-    WIN.fill(GRAY)
-
-    for x in range(WIDTH):
-        for y in range(HEIGHT):
-            offset = 0
-            if y % 2 == 0:
-                offset = 1
-
-            if (x + offset) % 2 == 0:
-                pygame.draw.rect(WIN, BLACK, (x * WIN_SCALE, y * WIN_SCALE, WIN_SCALE, WIN_SCALE))
-
+    draw_background()
     # Gets info from server before drawing assets
     get_server_info()
     # Drawing assets
@@ -228,6 +266,7 @@ def draw(path=None):
         move_snake()
 
     draw_snakes()
+    draw_score(len(snake_body) - 4)
 
     pygame.display.update()
 
@@ -367,36 +406,6 @@ def show_score():
     score_win.mainloop()
 
 
-def show_players():
-    player_window = tk.Tk()
-    player_window.title("PySnake")
-    player_window.resizable(0, 0)
-    player_window.configure(bg="#2d2d2d")
-
-    # Fonts
-    font = Font(family="Helvetica", size=12)
-    title_font = Font(family="Helvetica", size=24)
-
-    # Title:
-    title_label = tk.Label(player_window, text="PySnake 🐍", font=title_font, fg="white", bg="#2d2d2d", padx=30,
-                           pady=20)
-    title_label.pack()
-
-    # Player score
-    player_score_text = "Current score: {}".format(len(snake_body) - 4)
-    player_score_label = tk.Label(title_label, text=player_score_text, font=font, pady=10, fg="white", bg="#2d2d2d")
-    player_score_label.pack()
-
-    # Current player and scores
-    current_players_text = "Players: \n"
-    for snake in snakes:
-        current_players_text += "{}: {}\n".format(snake["name"], len(snake["position"]) - 4)
-
-    current_players_label = tk.Label(title_label, text=current_players_text, font=font, padx=60, pady=5, fg="white",
-                                     bg="#2d2d2d")
-    current_players_label.pack()
-
-
 def move_bot_snake(path):
     global velX, velY, posX, posY
 
@@ -479,6 +488,8 @@ def start_snake():
     global game_over
     global snake_name
 
+    # Draws all the text
+    draw_score(0)
     # If game_over is false, it is the first time the player started this session
     # If game_over is true, it is not the first time
     if not game_over:
