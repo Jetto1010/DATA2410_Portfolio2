@@ -9,6 +9,12 @@ import re
 import sys
 import json
 
+try:
+    address = sys.argv[1]
+except IndexError:
+    print("Need to give ip and port, 'ip:port'")
+    sys.exit()
+
 width = 64
 height = 36
 players = []
@@ -249,7 +255,7 @@ def start():
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     add_SnakeServicer_to_server(Snake(), server)
-    server.add_insecure_port("localhost:9999")
+    server.add_insecure_port(address)
     server.start()
     print("Server has started")
     threading.Thread(target=make_fruits_startup, args=(6,)).start()

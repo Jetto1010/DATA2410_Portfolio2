@@ -32,7 +32,13 @@ def show_prompt(msg, btnText="Ok"):
 
 
 try:
-    channel = grpc.insecure_channel("localhost:9999")
+    address = sys.argv[1]
+except IndexError:
+    print("Need to give ip and port, ip:port")
+    sys.exit()
+
+try:
+    channel = grpc.insecure_channel(address)
     service = SnakeStub(channel)
     size = service.get_size(No_parameter())
 except (grpc.RpcError, RuntimeError):
