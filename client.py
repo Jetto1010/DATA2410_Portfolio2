@@ -335,7 +335,7 @@ def show_menu():
             Collect "fruit" or red pixels to achieve a greater score.
             Avoid dying by evading other players, yourself and the border.
             The snake can not move backwards
-            The game is over once everybody has gotten a game over
+            The game is over once everybody has gotten a game over or the player decides to exit.
 
             Controls:
             There are two sets of controls that do the same thing

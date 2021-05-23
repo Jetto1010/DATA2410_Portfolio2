@@ -257,7 +257,7 @@ def start():
     add_SnakeServicer_to_server(Snake(), server)
     server.add_insecure_port(address)
     server.start()
-    print("Server has started")
+    print("Server has started on {}".format(address))
     threading.Thread(target=make_fruits_startup, args=(6,)).start()
     threading.Thread(target=remove_dead).start()
     try:
