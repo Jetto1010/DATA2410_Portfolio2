@@ -35,7 +35,7 @@ try:
     channel = grpc.insecure_channel("localhost:9999")
     service = SnakeStub(channel)
     size = service.get_size(No_parameter())
-except grpc.RpcError:
+except (grpc.RpcError, RuntimeError):
     show_prompt("Error:\nCould not connect to server")
     sys.exit()
 
@@ -445,6 +445,7 @@ def bot_main():
     global WIDTH, HEIGHT
 
     clock = pygame.time.Clock()
+    get_server_info()
 
     # Starting conditions
     client_info = {
@@ -456,9 +457,7 @@ def bot_main():
         "dimensions": (WIDTH, HEIGHT)
     }
 
-    get_server_info()
-    fruit = fruits[0]
-    path = find_path(fruit, client_info)
+    path = find_path(closest_fruit(client_info), client_info)
 
     while run:
         clock.tick(FPS)
@@ -471,7 +470,7 @@ def bot_main():
             "dimensions": (WIDTH, HEIGHT)
         }
 
-        fruit = closest_fruit(fruit, client_info)
+        fruit = closest_fruit(client_info)
         if path[2:4] in snakes or len(path) == 1:  # LEN PATH JUST IMPLEMENTED UNTIL PATHING WITH NO RESULT FIXED
             path = find_path(fruit, client_info)
 
