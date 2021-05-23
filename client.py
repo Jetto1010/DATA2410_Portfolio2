@@ -393,13 +393,6 @@ def show_score():
     score_label = tk.Label(score_win, text=score_text, font=font, padx=60, pady=5, fg="white", bg="#2d2d2d")
     score_label.pack()
 
-    def play_again():
-        score_win.destroy()
-        start_again()
-
-    play_again_button = Button(score_win, text="Play again", command=play_again, font=font, pady=5)
-    play_again_button.pack()
-
     margin_label = Label(score_win, text="", pady=0.1, fg="white", bg="#2d2d2d")
     margin_label.pack()
 
@@ -484,6 +477,7 @@ def bot_main():
 
 def start_snake():
     global posX, posY
+    global velX
     global game_over
     global snake_name
     global FPS
@@ -504,10 +498,13 @@ def start_snake():
         # This way player keeps same name and color
         player_request = service.send_player(player)  # Sends server info that player wants to play again
         player.game_over = game_over = False  # Sets game_over to false for player
-
     # Gets empty tiles from server
     for pos in player_request.position:
         snake_body.append((pos.x, pos.y))
+    # If closer to the right side it will start going towards the left instead
+    if snake_body[0][0] > WIDTH / 2:
+        velX = -1
+    # Sets start position
     posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
 
     if bot == 1:
@@ -522,29 +519,6 @@ def start_snake():
     high_score.score = len(snake_body) - 4
     service.send_high_score(high_score)
     show_score()
-
-
-def start_again():
-    global WIN
-    global velX, velY
-    global snake_body
-    global posX, posY
-    global player
-    global run
-    global snakes
-    global fruits
-
-    pygame.init()
-    pygame.font.init()
-    pygame.display.set_caption("PySnake")
-    WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-    velX, velY = 1, 0
-    snake_body = []
-    posX, posY = -1, -1
-    run = True
-    snakes = []
-    fruits = []
-    start_snake()
 
 
 if __name__ == "__main__":
