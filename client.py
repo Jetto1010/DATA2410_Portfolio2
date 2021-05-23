@@ -111,7 +111,7 @@ def draw_fruit():
 def draw_score(score):  # Has parameter for score input so right score will show on start up
     # Has to draw all the white to remove previous text
     pygame.draw.rect(WIN, (235, 235, 235), (WIDTH * WIN_SCALE, 5, 145, HEIGHT * WIN_SCALE - 10))
-    text_surface = font_score_1.render("Scores:", False, (0, 0, 0))
+    text_surface = font_score_1.render("Scores:", True, BLACK)
     WIN.blit(text_surface, (WIDTH * WIN_SCALE + 10, 10))
 
     text_array = [  # Predetermined text
@@ -126,9 +126,9 @@ def draw_score(score):  # Has parameter for score input so right score will show
     # Draws all the text on the right hand side
     for i in range(1, len(text_array)):
         if text_array[i][1] == font_score_3:
-            text = font_score_3.render(text_array[i][0], False, BLACK)
+            text = font_score_3.render(text_array[i][0], True, BLACK)
         else:
-            text = font_score_2.render(text_array[i][0], False, BLACK)
+            text = font_score_2.render(text_array[i][0], True, BLACK)
         pixel_from_top += text_array[i - 1][2]
         WIN.blit(text, (WIDTH * WIN_SCALE + 10, pixel_from_top))
 
@@ -487,9 +487,9 @@ def start_snake():
     global posX, posY
     global game_over
     global snake_name
-
+    global FPS
     # Draws all the text
-    draw_score(0)
+    draw_score(-1)
     # If game_over is false, it is the first time the player started this session
     # If game_over is true, it is not the first time
     if not game_over:
@@ -512,6 +512,7 @@ def start_snake():
     posX, posY = snake_body[-1][0] + velX, snake_body[-1][1] + velY
 
     if bot == 1:
+        FPS = 20
         bot_main()
     else:
         main()
@@ -535,6 +536,7 @@ def start_again():
     global fruits
 
     pygame.init()
+    pygame.font.init()
     pygame.display.set_caption("PySnake")
     WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
     velX, velY = 1, 0

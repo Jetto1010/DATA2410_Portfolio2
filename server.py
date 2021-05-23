@@ -184,7 +184,7 @@ def empty_tile(pos):
 def make_fruits():
     global fruits
     # Generates fruits over time
-    time.sleep(random.random() + random.randint(1, 3))
+    time.sleep(random.random() + random.randint(0, 2))
     pos = Position()
     pos.x = random.randint(1, width - 1)
     pos.y = random.randint(1, height - 1)

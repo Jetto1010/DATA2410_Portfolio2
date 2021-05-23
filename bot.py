@@ -1,6 +1,5 @@
-import math
-import time
 from queue import PriorityQueue
+
 
 # c in this file stands for client_info, which contains all information needed for the bot to calculate its path
 # Nodes that are connected to the coordinates of the snake game
@@ -8,7 +7,7 @@ class Node:
     def __init__(self, x, y, parent):
         self.x = x
         self.y = y
-        self.n = [] # Neighbors
+        self.n = []  # Neighbors
         self.parent = parent
 
         # Length of amount of parents
@@ -19,11 +18,10 @@ class Node:
 
         # Distance from fruit
         self.distance = None
-    
+
     # Lesser than comparator
     def __lt__(self, other):
         return False
-
 
     # If the node is not the border or part of a snake, it adds it as a neighbor (Excluding things we want to avoid)
     def set_n(self, c):
@@ -36,7 +34,7 @@ class Node:
             # Boolean statements for game_over if test below
             hit_self = (x, y) in snake_body
             hit_border = x > WIDTH - 1 or x < 0 or y > HEIGHT - 1 or y < 0
-        
+
             hit_snakes = False
             for snake in snakes:
                 if (x, y) in snake["position"]:
@@ -67,9 +65,11 @@ class Node:
         if is_safe(xleft, yleft):
             self.n.append(Node(xleft, yleft, self))
 
+
 # Returns the distance between the snake head and fruit
 def distance(p1, p2):
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
 
 # Find the fruit closest to the snake
 def closest_fruit(fruit, c):
@@ -90,6 +90,7 @@ def closest_fruit(fruit, c):
 
     return fruit
 
+
 # Find closest path to closest_fruit, all while avoiding obstacles like border and other snakes
 # A* algorithm
 # Array with coordinates to closest_fruit, next_pos - pos = (velX, velY)
@@ -103,7 +104,6 @@ def find_path(fruit, c):
     length = 0
     path = []
     checked_nodes = []
-    
 
     # Put in snake head node to start process
     potential_path = PriorityQueue()
@@ -120,7 +120,7 @@ def find_path(fruit, c):
         if (current_node.x, current_node.y) == fruit:
             end_node = current_node
             break
-        
+
         # Checks the neighbouring nodes to the current one, and compares their distance with each other.
         # The node with the shortest distance gets picked and put into potential path list
         current_node.set_n(c)
@@ -145,7 +145,8 @@ def find_path(fruit, c):
 
     path.reverse()
     return path
-    
+
+
 # Final bot_main() will look like
 """
 draw()
