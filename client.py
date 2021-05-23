@@ -43,7 +43,6 @@ WIDTH, HEIGHT = size.x, size.y
 WIN_SCALE = 20
 pygame.display.set_caption("PySnake")
 WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-screen = pygame.Surface((WIDTH, HEIGHT))
 FPS = 12
 run = True
 bot = 0
@@ -77,13 +76,13 @@ def rand_light_color():
 def draw_snakes():
     for snake in snakes:
         for pos in snake["position"]:
-            screen.set_at(pos, snake["color"])
+            pygame.draw.rect(WIN, snake["color"], (pos[0] * WIN_SCALE, pos[1] * WIN_SCALE, WIN_SCALE, WIN_SCALE))
 
 
 # Draws the fruit coordinates from the server
 def draw_fruit():
     for pos in fruits:
-        screen.set_at(pos, "red")
+        pygame.draw.rect(WIN, (255, 0, 0), (pos[0] * WIN_SCALE, pos[1] * WIN_SCALE, WIN_SCALE, WIN_SCALE))
 
 
 # Updates information about player
@@ -208,7 +207,7 @@ def draw(path=None):
     if path is None:
         path = []
     # Drawing background
-    screen.fill(BLACK)
+    WIN.fill(GRAY)
 
     for x in range(WIDTH):
         for y in range(HEIGHT):
@@ -217,7 +216,7 @@ def draw(path=None):
                 offset = 1
 
             if (x + offset) % 2 == 0:
-                screen.set_at((x, y), GRAY)
+                pygame.draw.rect(WIN, BLACK, (x * WIN_SCALE, y * WIN_SCALE, WIN_SCALE, WIN_SCALE))
 
     # Gets info from server before drawing assets
     get_server_info()
@@ -230,7 +229,6 @@ def draw(path=None):
 
     draw_snakes()
 
-    WIN.blit(pygame.transform.scale(screen, WIN.get_rect().size), (0, 0))
     pygame.display.update()
 
 
@@ -517,7 +515,6 @@ def start_snake():
 
 def start_again():
     global WIN
-    global screen
     global velX, velY
     global snake_body
     global posX, posY
@@ -529,7 +526,6 @@ def start_again():
     pygame.init()
     pygame.display.set_caption("PySnake")
     WIN = pygame.display.set_mode((WIDTH * WIN_SCALE, HEIGHT * WIN_SCALE))
-    screen = pygame.Surface((WIDTH, HEIGHT))
     velX, velY = 1, 0
     snake_body = []
     posX, posY = -1, -1
