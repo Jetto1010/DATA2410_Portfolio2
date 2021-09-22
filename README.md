@@ -1,5 +1,5 @@
 # DATA2410_Portfolio2
-## Multiplayer Snake with Bot support
+## Multiplayer Snake with Bot support and Docker deployment
 
 Final portfolio assignment in [Networking and cloud computing](https://student.oslomet.no/en/studier/-/studieinfo/emne/DATA2410/2020/H%C3%98ST)  
 A full report on the project is published under README.pdf in the repository:  
